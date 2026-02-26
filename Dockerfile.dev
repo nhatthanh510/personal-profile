@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+RUN addgroup app && adduser -S maintainer -G app
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+RUN chown -R maintainer:app .
+
+USER maintainer
+
+RUN pnpm install --frozen-lockfile
+
+COPY --chown=maintainer:app . .
+
+EXPOSE 5173
+
+CMD ["pnpm", "dev"]
+ 
