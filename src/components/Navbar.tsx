@@ -5,7 +5,7 @@ export const Navbar = () => {
     <nav>
       <div>
         <img src={"/images/logo.svg"} alt="logo" />
-        <p className="font-bold">John Doe Portfolio</p>
+        <p className="font-bold">Nathan's Portfolio</p>
        
        <ul>
         {navLinks.map(({id, name}) => (

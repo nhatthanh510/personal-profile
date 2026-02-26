@@ -59,3 +59,11 @@ export const DOCK_CONFIG = {
   animDuration: 0.3,
   bounceDuration: 0.6,
 } as const;
+
+export const WINDOW_CONFIG = {
+  openDuration: 0.35,
+  closeDuration: 0.25,
+  minimizeDuration: 0.4,
+  restoreDuration: 0.35,
+  defaultPosition: { x: 100, y: 60 },
+} as const;
