@@ -4,10 +4,11 @@
 
 html,
 body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   width: 100dvw;
   overflow: hidden;
   height: 100dvh;
-  background-image: url("/images/wallpaper.png");
+  background-image: url("/images/wallpaper_v26.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -37,7 +38,7 @@ body {
   }
 
   nav {
-    @apply flex justify-between items-center bg-white/50 backdrop-blur-3xl p-2 px-5 select-none;
+    @apply flex justify-between items-center bg-transparent backdrop-blur-none p-2 px-5 select-none;
 
     div {
       @apply flex items-center max-sm:w-full max-sm:justify-center gap-5;
@@ -54,6 +55,7 @@ body {
         @apply text-sm cursor-pointer hover:underline transition-all;
       }
     }
+
   }
 
   #welcome {
@@ -62,5 +64,43 @@ body {
 
   .small-screen {
     @apply absolute bottom-10 text-sm text-black/50 sm:hidden;
+  }
+
+  #dock {
+    @apply fixed bottom-2 left-1/2 -translate-x-1/2 z-50;
+  }
+
+  .dock-container {
+    @apply flex items-end gap-0.5 bg-white/20 backdrop-blur-2xl rounded-2xl px-2 pb-1.5 pt-1 border border-white/40;
+  }
+
+  .dock-separator {
+    @apply w-px h-10 bg-white/40 mx-1.5 self-center shrink-0;
+  }
+
+  .dock-item {
+    @apply relative flex flex-col items-center justify-end;
+    width: 50px;
+  }
+
+  .dock-icon {
+    @apply cursor-pointer origin-bottom will-change-transform h-11 w-11;
+
+    img {
+      @apply w-full h-full object-contain select-none;
+      -webkit-user-drag: none;
+    }
+
+    &:disabled {
+      @apply cursor-default;
+    }
+  }
+
+  .dock-dot {
+    @apply absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white/70;
+  }
+
+  .dock-tooltip {
+    @apply !bg-gray-800/80 !text-white !text-xs !rounded-md !px-2 !py-1 !backdrop-blur-sm;
   }
 }

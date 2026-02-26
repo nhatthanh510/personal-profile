@@ -24,7 +24,9 @@ export const Navbar = () => {
           </li>
         ))}
       </ul>
-      <time>{dayjs().format('ddd, MMM D, h:mm A')}</time>
+      <time className="text-sm font-medium">
+        {dayjs().format('ddd D MMM h:mm A')}
+      </time>
 
      </div>
 
