@@ -1,16 +1,11 @@
-import { Minus, Square, X } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Maximize2, Minus, X, Minimize2 } from "lucide-react";
 import useWindowStore from "@/store/window";
 
 interface WindowControlsProps {
   target: string;
 }
 
-function TrafficLightButton({
+const TrafficLightButton = ({
   color,
   hoverIcon: Icon,
   iconColor,
@@ -22,33 +17,22 @@ function TrafficLightButton({
   iconColor: string;
   label: string;
   onClick?: () => void;
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={onClick}
-          className={`group size-3 rounded-full flex-center transition-all hover:brightness-90 ${color}`}
-          aria-label={label}
-        >
-          <Icon
-            className={`size-2 opacity-0 group-hover:opacity-100 transition-opacity ${iconColor}`}
-            strokeWidth={3}
-          />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent
-        side="top"
-        className="bg-[#3a3a3a] text-[#e0e0e0] text-[11px] border-[#555] px-2 py-1"
-      >
-        {label}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
+}) => (
+    <button
+      onClick={onClick}
+      className={`group size-3 rounded-full flex-center transition-all hover:brightness-90 ${color}`}
+      aria-label={label}
+    >
+      <Icon
+        className={`size-2 opacity-0 group-hover:opacity-100 transition-opacity ${iconColor}`}
+        strokeWidth={3}
+      />
+    </button>
+);
 
-export function WindowControls({ target }: WindowControlsProps) {
-  const { closeWindow, minimizeWindow, toggleMaximize } = useWindowStore();
+export const WindowControls = ({ target }: WindowControlsProps) => {
+  const { closeWindow, minimizeWindow, toggleMaximize, windows } = useWindowStore();
+  const isMaximized = windows[target]?.isMaximized;
 
   return (
     <div className="flex items-center gap-[7px] cursor-default">
@@ -68,11 +52,11 @@ export function WindowControls({ target }: WindowControlsProps) {
       />
       <TrafficLightButton
         color="bg-[#28c840]"
-        hoverIcon={Square}
+        hoverIcon={isMaximized ? Minimize2 : Maximize2}
         iconColor="text-[#0a5417]"
-        label="Full Screen"
+        label={isMaximized ? "Exit Full Screen" : "Full Screen"}
         onClick={() => toggleMaximize(target)}
       />
     </div>
   );
-}
+};

@@ -139,14 +139,25 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       }
     }, [isOpen]);
 
-    // ── Draggable (GSAP Draggable on title bar) ────────────
-    useEffect(() => {
+    // Draggable (GSAP Draggable on title bar)
+    useLayoutEffect(() => {
       const el = windowRef.current;
-      if (!el) return;
+      const trigger = titleBarRef.current;
+
+      if (!el || !trigger) return;
 
       const [draggable] = Draggable.create(el, {
+        trigger,
         onPress() {
           store.focusWindow(windowKey);
+        },
+        onDragEnd() {
+          // Sync final position to store and clear transform so
+          // left/top remain the single source of truth
+          const rect = el.getBoundingClientRect();
+          gsap.set(el, { clearProps: "transform" });
+          gsap.set(el, { left: rect.left, top: rect.top });
+          store.updatePosition(windowKey, rect.left, rect.top);
         },
       });
 
