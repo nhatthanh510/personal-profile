@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { INITIAL_INDEX, WINDOWS_CONFIG, type WindowsConfig } from '@/constants';
+import { INITIAL_INDEX, WINDOWS_CONFIG, type WindowsConfig, type FileViewerData } from '@/constants';
 
 interface WindowState {
   windows: WindowsConfig;
   nextZIndex: number;
-  openWindow: (windowKey: string, data?: unknown) => void;
+  openWindow: (windowKey: string, data?: FileViewerData | null) => void;
   closeWindow: (windowKey: string) => void;
   focusWindow: (windowKey: string) => void;
   minimizeWindow: (windowKey: string) => void;

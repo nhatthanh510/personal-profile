@@ -76,10 +76,15 @@ export interface WindowGeometry {
   height: number;
 }
 
+export interface FileViewerData {
+  title: string;
+  src: string;
+}
+
 export interface WindowConfig {
   isOpen: boolean;
   zIndex: number;
-  data: unknown;
+  data: FileViewerData | null;
   x: number | null;
   y: number | null;
   width: number;

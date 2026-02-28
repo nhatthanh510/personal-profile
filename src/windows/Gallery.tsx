@@ -1,9 +1,10 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeft, ChevronRight, X, Grid3X3 } from "lucide-react";
@@ -97,11 +98,25 @@ const Gallery = ({ titleBarRef }: WindowWrapperProps) => {
     );
   }, []);
 
+  // ── Keyboard navigation for lightbox ──────────────────────────
+  useEffect(() => {
+    if (selectedIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") goPrev();
+      else if (e.key === "ArrowRight") goNext();
+      else if (e.key === "Escape") closeImage();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedIndex, goPrev, goNext, closeImage]);
+
   const selectedImage = selectedIndex !== null ? galleryImages[selectedIndex] : null;
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-[#1e1e1e]">
+      <WindowShell className="bg-[#1e1e1e]">
         {/* Title Bar */}
         <WindowTitleBar
           target="photos"
@@ -205,7 +220,7 @@ const Gallery = ({ titleBarRef }: WindowWrapperProps) => {
             </button>
           </div>
         )}
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };

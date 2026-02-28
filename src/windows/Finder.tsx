@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,7 @@ import {
 
 // ── Finder Component ─────────────────────────────────────────────
 const Finder = ({ titleBarRef }: WindowWrapperProps) => {
-  const { openWindow } = useWindowStore();
+  const openWindow = useWindowStore((s) => s.openWindow);
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -91,7 +92,7 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-white">
+      <WindowShell className="bg-white">
         {/* ── Title Bar ────────────────────────────────────────── */}
         <WindowTitleBar target="finder" titleBarRef={titleBarRef}>
           <nav className="flex items-center gap-0.5 text-[13px]">
@@ -135,7 +136,7 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
             onOpen={handleOpen}
           />
         </div>
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };

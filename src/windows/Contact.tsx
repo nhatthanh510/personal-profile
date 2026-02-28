@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail, Send } from "lucide-react";
@@ -37,7 +38,7 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-[#f5f5f7]">
+      <WindowShell className="bg-[#f5f5f7]">
         <WindowTitleBar target="contact" titleBarRef={titleBarRef}>
           <span className="text-[13px] font-semibold text-[#333]">Contacts</span>
         </WindowTitleBar>
@@ -145,7 +146,7 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
             </form>
           </div>
         </ScrollArea>
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };

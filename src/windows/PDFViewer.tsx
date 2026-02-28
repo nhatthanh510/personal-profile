@@ -5,6 +5,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowControls } from "@/components/WindowControls";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
 import { Download } from "lucide-react";
@@ -34,14 +35,12 @@ function useDelayedOpen(isOpen: boolean, delay: number) {
 }
 
 const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const { windows } = useWindowStore();
-  const data = windows.pdfFile.data as { title: string; src: string } | null;
+  const data = useWindowStore((s) => s.windows.pdfFile.data);
+  const isOpen = useWindowStore((s) => s.windows.pdfFile.isOpen);
 
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const isOpen = windows.pdfFile.isOpen;
 
   // Delay rendering until window is visible (animation sets display:block)
   const ready = useDelayedOpen(isOpen, 60);
@@ -103,7 +102,7 @@ const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-white">
+      <WindowShell className="bg-white">
         {/* Title bar */}
         <div
           ref={titleBarRef}
@@ -169,7 +168,7 @@ const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
               ))}
           </Document>
         </div>
-      </div>
+      </WindowShell>
 
       <style>{`
         .pdf-scroll {

@@ -2,17 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
 
-interface TextData {
-  title: string;
-  src: string;
-}
-
 const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const { windows } = useWindowStore();
-  const data = windows.txtFile.data as TextData | null;
+  const data = useWindowStore((s) => s.windows.txtFile.data);
 
   const [fetched, setFetched] = useState<{ src: string; text: string | null; error: boolean }>({
     src: "",
@@ -50,7 +45,7 @@ const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-white">
+      <WindowShell className="bg-white">
         <WindowTitleBar target="txtFile" titleBarRef={titleBarRef}>
           <span className="text-[13px] text-[#333] font-medium truncate max-w-[300px]">
             {data.title}
@@ -74,7 +69,7 @@ const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
             </div>
           )}
         </div>
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };

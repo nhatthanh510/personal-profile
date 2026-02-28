@@ -1,5 +1,5 @@
 import { dockApps, type DockApp } from "@/constants";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { Tooltip } from 'react-tooltip';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -15,7 +15,10 @@ const getMagnification = (distance: number): number => {
 };
 
 export const Dock = () => {
-  const { windows, openWindow, closeWindow, unminimizeWindow } = useWindowStore();
+  const windows = useWindowStore((s) => s.windows);
+  const openWindow = useWindowStore((s) => s.openWindow);
+  const closeWindow = useWindowStore((s) => s.closeWindow);
+  const unminimizeWindow = useWindowStore((s) => s.unminimizeWindow);
   const dockRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLElement[]>([]);
 
@@ -87,7 +90,7 @@ export const Dock = () => {
     }
   };
 
-  const trashIndex = dockApps.findIndex(app => app.id === 'trash');
+  const trashIndex = useMemo(() => dockApps.findIndex(app => app.id === 'trash'), []);
 
   return (
     <section id="dock">

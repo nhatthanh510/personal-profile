@@ -31,8 +31,10 @@ const TrafficLightButton = ({
 );
 
 export const WindowControls = ({ target }: WindowControlsProps) => {
-  const { closeWindow, minimizeWindow, toggleMaximize, windows } = useWindowStore();
-  const isMaximized = windows[target]?.isMaximized;
+  const isMaximized = useWindowStore((s) => s.windows[target]?.isMaximized);
+  const closeWindow = useWindowStore((s) => s.closeWindow);
+  const minimizeWindow = useWindowStore((s) => s.minimizeWindow);
+  const toggleMaximize = useWindowStore((s) => s.toggleMaximize);
 
   return (
     <div className="flex items-center gap-[7px] cursor-default">

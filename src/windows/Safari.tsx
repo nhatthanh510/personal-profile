@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -101,7 +102,7 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/50 border border-white/8 flex flex-col bg-white">
+      <WindowShell className="shadow-black/50 border-white/8 bg-white">
         {/* ── Title bar with address bar ───────────────────────── */}
         <WindowTitleBar
           target="safari"
@@ -191,7 +192,7 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
             </ScrollArea>
           )}
         </div>
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };

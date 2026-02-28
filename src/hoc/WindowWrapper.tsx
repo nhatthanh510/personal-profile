@@ -4,6 +4,8 @@ import {
   useRef,
   useEffect,
   useLayoutEffect,
+  useMemo,
+  useCallback,
   type ComponentProps,
   type ComponentType,
   type RefObject,
@@ -17,23 +19,29 @@ export interface WindowWrapperProps {
 
 const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: string) => {
   const WrappedComponent = (props: Omit<ComponentProps<typeof Component>, keyof WindowWrapperProps>) => {
-    const store = useWindowStore();
-    const win = store.windows[windowKey];
+    const win = useWindowStore((s) => s.windows[windowKey]);
+    const focusWindow = useWindowStore((s) => s.focusWindow);
+    const updatePosition = useWindowStore((s) => s.updatePosition);
     const { isOpen, zIndex, isMinimized, isMaximized, x, y, width, height } = win;
 
     const windowRef = useRef<HTMLDivElement>(null);
     const titleBarRef = useRef<HTMLDivElement>(null);
     const prevIsMinimized = useRef(isMinimized);
     const prevIsMaximized = useRef(isMaximized);
+    const hasCentered = useRef(false);
 
     // ── Auto-center on first open ──────────────────────────
     useEffect(() => {
-      if (isOpen && x === null && !isMinimized) {
+      if (isOpen && x === null && !isMinimized && !hasCentered.current) {
+        hasCentered.current = true;
         const cx = (window.innerWidth - width) / 2;
         const cy = (window.innerHeight - height) / 2;
-        store.updatePosition(windowKey, cx, cy);
+        updatePosition(windowKey, cx, cy);
       }
-    }, [isOpen, x, width, height, isMinimized, store]);
+      if (!isOpen) {
+        hasCentered.current = false;
+      }
+    }, [isOpen, x, width, height, isMinimized, updatePosition]);
 
     // ── Open animation ─────────────────────────────────────
     useGSAP(() => {
@@ -150,7 +158,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       const [draggable] = Draggable.create(el, {
         trigger,
         onPress() {
-          store.focusWindow(windowKey);
+          focusWindow(windowKey);
         },
         onDragEnd() {
           // Sync final position to store and clear transform so
@@ -158,43 +166,47 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
           const rect = el.getBoundingClientRect();
           gsap.set(el, { clearProps: "transform" });
           gsap.set(el, { left: rect.left, top: rect.top });
-          store.updatePosition(windowKey, rect.left, rect.top);
+          updatePosition(windowKey, rect.left, rect.top);
         },
       });
 
       return () => {
         draggable.kill();
       };
-    }, [isOpen]);
+    }, [isOpen, focusWindow, updatePosition]);
 
     // ── Compute inline style ───────────────────────────────
-    const computedX = x ?? (window.innerWidth - width) / 2;
-    const computedY = y ?? (window.innerHeight - height) / 2;
-
-    const style: CSSProperties = isMaximized
-      ? {
+    const style: CSSProperties = useMemo(() => {
+      if (isMaximized) {
+        return {
           zIndex,
           position: "absolute",
           top: 0,
           left: 0,
           width: "100vw",
           height: "100vh",
-        }
-      : {
-          zIndex,
-          position: "absolute",
-          left: computedX,
-          top: computedY,
-          width,
-          height,
         };
+      }
+      return {
+        zIndex,
+        position: "absolute",
+        left: x ?? (window.innerWidth - width) / 2,
+        top: y ?? (window.innerHeight - height) / 2,
+        width,
+        height,
+      };
+    }, [isMaximized, zIndex, x, y, width, height]);
+
+    const handleMouseDown = useCallback(() => {
+      focusWindow(windowKey);
+    }, [focusWindow]);
 
     return (
       <section
         id={windowKey}
         ref={windowRef}
         style={style}
-        onMouseDown={() => store.focusWindow(windowKey)}
+        onMouseDown={handleMouseDown}
       >
         <Component {...(props as ComponentProps<typeof Component>)} titleBarRef={titleBarRef} />
       </section>

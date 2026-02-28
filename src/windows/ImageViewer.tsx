@@ -1,18 +1,18 @@
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
 
 const ImageViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const { windows } = useWindowStore();
-  const data = windows.imgFile.data as { title: string; src: string } | null;
+  const data = useWindowStore((s) => s.windows.imgFile.data);
 
   if (!data) return null;
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-black/30 border border-[#c0c0c0] flex flex-col bg-[#1e1e1e]">
+      <WindowShell className="bg-[#1e1e1e]">
         <WindowTitleBar
           target="imgFile"
           titleBarRef={titleBarRef}
@@ -31,7 +31,7 @@ const ImageViewer = ({ titleBarRef }: WindowWrapperProps) => {
             draggable={false}
           />
         </div>
-      </div>
+      </WindowShell>
     </TooltipProvider>
   );
 };
