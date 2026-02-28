@@ -103,11 +103,94 @@ export const finderTree: FinderItem[] = [
     icon: ICONS.folder,
     children: [
       {
-        id: "resume-pdf",
-        name: "Resume.pdf",
-        type: "pdf",
-        icon: ICONS.pdf,
-        pdfSrc: "/resume.pdf",
+        id: "doc-work",
+        name: "Work",
+        type: "folder",
+        icon: ICONS.folder,
+        children: [
+          {
+            id: "doc-work-contracts",
+            name: "Contracts",
+            type: "folder",
+            icon: ICONS.folder,
+            children: [
+              {
+                id: "doc-nda",
+                name: "NDA.pdf",
+                type: "pdf",
+                icon: ICONS.pdf,
+                pdfSrc: "/resume.pdf",
+              },
+              {
+                id: "doc-offer-letter",
+                name: "Offer Letter.pdf",
+                type: "pdf",
+                icon: ICONS.pdf,
+                pdfSrc: "/resume.pdf",
+              },
+            ],
+          },
+          {
+            id: "doc-work-notes",
+            name: "Notes",
+            type: "folder",
+            icon: ICONS.folder,
+            children: [
+              {
+                id: "doc-meeting-notes",
+                name: "Meeting Notes.txt",
+                type: "txt",
+                icon: ICONS.txt,
+                txtSrc: "/cover-letter.txt",
+              },
+            ],
+          },
+          {
+            id: "resume-pdf",
+            name: "Resume.pdf",
+            type: "pdf",
+            icon: ICONS.pdf,
+            pdfSrc: "/resume.pdf",
+          },
+        ],
+      },
+      {
+        id: "doc-personal",
+        name: "Personal",
+        type: "folder",
+        icon: ICONS.folder,
+        children: [
+          {
+            id: "doc-personal-journal",
+            name: "Journal",
+            type: "folder",
+            icon: ICONS.folder,
+            children: [
+              {
+                id: "doc-journal-entry",
+                name: "Entry-2024.txt",
+                type: "txt",
+                icon: ICONS.txt,
+                txtSrc: "/cover-letter.txt",
+              },
+            ],
+          },
+          {
+            id: "doc-personal-photos",
+            name: "Photos",
+            type: "folder",
+            icon: ICONS.folder,
+            children: [
+              {
+                id: "doc-headshot",
+                name: "Headshot.png",
+                type: "image",
+                icon: ICONS.image,
+                imageSrc: "/images/project-1.png",
+              },
+            ],
+          },
+        ],
       },
       {
         id: "cover-letter",

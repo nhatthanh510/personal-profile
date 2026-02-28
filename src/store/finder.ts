@@ -26,10 +26,31 @@ interface FinderState {
   currentItems: FinderItem[];
   breadcrumbs: { label: string; pathIndex: number }[];
   sidebarSections: SidebarSection[];
+  history: string[][];
+  historyIndex: number;
+  canGoBack: boolean;
+  canGoForward: boolean;
   sidebarNavigate: (folderId: string) => void;
   breadcrumbNavigate: (index: number) => void;
   select: (id: string) => void;
   open: (item: FinderItem) => void;
+  goBack: () => void;
+  goForward: () => void;
+}
+
+function navigateTo(s: FinderState, newPath: string[]) {
+  const newHistory = [...s.history.slice(0, s.historyIndex + 1), newPath];
+  const newIndex = newHistory.length - 1;
+  return {
+    currentPath: newPath,
+    selectedItem: null,
+    currentItems: getItemsAtPath(newPath),
+    breadcrumbs: buildBreadcrumbs(newPath),
+    history: newHistory,
+    historyIndex: newIndex,
+    canGoBack: newIndex > 0,
+    canGoForward: false,
+  };
 }
 
 const useFinderStore = create<FinderState>((set) => ({
@@ -38,39 +59,25 @@ const useFinderStore = create<FinderState>((set) => ({
   currentItems: getItemsAtPath([]),
   breadcrumbs: buildBreadcrumbs([]),
   sidebarSections: SIDEBAR_SECTIONS,
+  history: [[]],
+  historyIndex: 0,
+  canGoBack: false,
+  canGoForward: false,
 
   sidebarNavigate: (folderId) =>
-    set({
-      currentPath: [folderId],
-      selectedItem: null,
-      currentItems: getItemsAtPath([folderId]),
-      breadcrumbs: buildBreadcrumbs([folderId]),
-    }),
+    set((s) => navigateTo(s, [folderId])),
 
   breadcrumbNavigate: (index) =>
     set((s) => {
       const newPath = index < 0 ? [] : s.currentPath.slice(0, index + 1);
-      return {
-        currentPath: newPath,
-        selectedItem: null,
-        currentItems: getItemsAtPath(newPath),
-        breadcrumbs: buildBreadcrumbs(newPath),
-      };
+      return navigateTo(s, newPath);
     }),
 
   select: (id) => set({ selectedItem: id }),
 
   open: (item) => {
     if (item.type === "folder") {
-      set((s) => {
-        const newPath = [...s.currentPath, item.id];
-        return {
-          currentPath: newPath,
-          selectedItem: null,
-          currentItems: getItemsAtPath(newPath),
-          breadcrumbs: buildBreadcrumbs(newPath),
-        };
-      });
+      set((s) => navigateTo(s, [...s.currentPath, item.id]));
       return;
     }
 
@@ -83,6 +90,38 @@ const useFinderStore = create<FinderState>((set) => ({
       openWindow("pdfFile", { title: item.name, src: item.pdfSrc });
     }
   },
+
+  goBack: () =>
+    set((s) => {
+      if (s.historyIndex <= 0) return s;
+      const newIndex = s.historyIndex - 1;
+      const newPath = s.history[newIndex];
+      return {
+        currentPath: newPath,
+        selectedItem: null,
+        currentItems: getItemsAtPath(newPath),
+        breadcrumbs: buildBreadcrumbs(newPath),
+        historyIndex: newIndex,
+        canGoBack: newIndex > 0,
+        canGoForward: true,
+      };
+    }),
+
+  goForward: () =>
+    set((s) => {
+      if (s.historyIndex >= s.history.length - 1) return s;
+      const newIndex = s.historyIndex + 1;
+      const newPath = s.history[newIndex];
+      return {
+        currentPath: newPath,
+        selectedItem: null,
+        currentItems: getItemsAtPath(newPath),
+        breadcrumbs: buildBreadcrumbs(newPath),
+        historyIndex: newIndex,
+        canGoBack: true,
+        canGoForward: newIndex < s.history.length - 1,
+      };
+    }),
 }));
 
 export default useFinderStore;
