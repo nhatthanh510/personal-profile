@@ -140,6 +140,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
     }, [isOpen]);
 
     // Draggable (GSAP Draggable on title bar)
+    // Re-run when isOpen changes so the trigger ref is available after first render
     useLayoutEffect(() => {
       const el = windowRef.current;
       const trigger = titleBarRef.current;
@@ -164,7 +165,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       return () => {
         draggable.kill();
       };
-    }, []);
+    }, [isOpen]);
 
     // ── Compute inline style ───────────────────────────────
     const computedX = x ?? (window.innerWidth - width) / 2;

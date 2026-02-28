@@ -58,8 +58,8 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
         return;
       }
 
-      if (item.type === "txt" && item.content) {
-        openWindow("txtFile", { title: item.name, content: item.content });
+      if (item.type === "txt" && item.txtSrc) {
+        openWindow("txtFile", { title: item.name, src: item.txtSrc });
         return;
       }
 
@@ -68,7 +68,12 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
         return;
       }
 
-      // pdf, figma — no handler yet, could add later
+      if (item.type === "pdf" && item.pdfSrc) {
+        openWindow("pdfFile", { title: item.name, src: item.pdfSrc });
+        return;
+      }
+
+      // figma — no handler yet, could add later
     },
     [openWindow]
   );

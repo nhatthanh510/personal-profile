@@ -1,0 +1,29 @@
+Dear Hiring Manager,
+
+I am writing to express my interest in the Full-Stack
+Developer position at your company.
+
+With over 5 years of experience building modern web
+applications, I bring expertise in React, TypeScript,
+Node.js, and cloud infrastructure. I am passionate
+about creating intuitive, performant user experiences
+and writing clean, maintainable code.
+
+I would love the opportunity to discuss how my skills
+and experience align with your team's goals.
+
+
+I am writing to express my interest in the Full-Stack
+Developer position at your company.
+
+With over 5 years of experience building modern web
+applications, I bring expertise in React, TypeScript,
+Node.js, and cloud infrastructure. I am passionate
+about creating intuitive, performant user experiences
+and writing clean, maintainable code.
+
+I would love the opportunity to discuss how my skills
+and experience align with your team's goals.
+
+Best regards,
+Nhat Thanh

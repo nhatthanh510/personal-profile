@@ -75,17 +75,6 @@ export const Dock = () => {
     };
   }, { scope: dockRef });
 
-  const bounceIcon = (el: HTMLElement) => {
-    const icon = el.querySelector<HTMLElement>('.dock-icon');
-    if (!icon) return;
-
-    const tl = gsap.timeline();
-    tl.to(icon, { y: -30, duration: 0.2, ease: "power2.out" })
-      .to(icon, { y: 0, duration: 0.25, ease: "bounce.out" })
-      .to(icon, { y: -14, duration: 0.15, ease: "power2.out" })
-      .to(icon, { y: 0, duration: 0.2, ease: "bounce.out" });
-  };
-
   const toggleApp = (app: DockApp) => {
     if (!app.canOpen) return;
     const win = windows[app.id];

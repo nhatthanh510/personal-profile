@@ -100,6 +100,7 @@ export const WINDOW_DEFAULTS: Record<string, { width: number; height: number }> 
   resume:   { width: 640, height: 500 },
   txtFile:  { width: 600, height: 400 },
   imgFile:  { width: 720, height: 500 },
+  pdfFile:  { width: 700, height: window.innerHeight - 80 },
 };
 
 function createWindowConfig(key: string): WindowConfig {
@@ -118,7 +119,7 @@ function createWindowConfig(key: string): WindowConfig {
   };
 }
 
-const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile'] as const;
+const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
 
 export const WINDOWS_CONFIG: WindowsConfig = Object.fromEntries(
   WINDOW_KEYS.map(k => [k, createWindowConfig(k)])
