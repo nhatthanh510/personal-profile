@@ -4,6 +4,8 @@ import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import useWindowStore from "@/store/window";
+import type { FinderInitData } from "@/constants";
 
 import { FinderStoreProvider, useFinderInstance } from "@/store/finderContext";
 import { FinderSidebar } from "./finder/FinderSidebar";
@@ -92,9 +94,16 @@ function FinderBreadcrumbs() {
 }
 
 // ── Finder ───────────────────────────────────────────────────────
+function isFinderInitData(data: unknown): data is FinderInitData {
+  return !!data && typeof data === "object" && "initialPath" in data;
+}
+
 export function Finder({ instanceId }: { instanceId: string }) {
+  const windowData = useWindowStore((s) => s.windows[instanceId]?.data);
+  const initialPath = isFinderInitData(windowData) ? windowData.initialPath : undefined;
+
   return (
-    <FinderStoreProvider>
+    <FinderStoreProvider initialPath={initialPath} windowId={instanceId}>
       <DynamicWindowWrapper windowId={instanceId} dockAppId="finder">
         {(titleBarRef) => (
           <TooltipProvider delayDuration={300}>

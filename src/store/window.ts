@@ -8,6 +8,7 @@ import {
   type WindowsConfig,
   type FileViewerData,
 } from '@/constants';
+import useLocationStore from './location';
 
 interface WindowState {
   windows: WindowsConfig;
@@ -22,7 +23,7 @@ interface WindowState {
   updatePosition: (windowKey: string, x: number, y: number) => void;
   addWindow: (id: string, overrides?: Partial<WindowsConfig[string]>) => void;
   removeWindow: (id: string) => void;
-  openNewFinder: () => string;
+  openNewFinder: (initialPath?: string[]) => string;
 }
 
 const useWindowStore = create<WindowState, [['zustand/immer', never]]>(
@@ -51,6 +52,9 @@ const useWindowStore = create<WindowState, [['zustand/immer', never]]>(
     closeWindow: (windowKey) => set((state) => {
       const win = state.windows[windowKey];
       if (!win) return;
+      if (windowKey.startsWith("finder-")) {
+        useLocationStore.getState().removePath(windowKey);
+      }
       // For dynamic windows (not in WINDOW_KEYS), remove entirely
       const isStatic = (WINDOW_KEYS as readonly string[]).includes(windowKey);
       if (!isStatic) {
@@ -115,16 +119,35 @@ const useWindowStore = create<WindowState, [['zustand/immer', never]]>(
       }
     }),
 
-    openNewFinder: () => {
+    openNewFinder: (initialPath?) => {
       const state = get();
+
+      // Check location store — if a Finder already shows this path, focus it
+      const existingId = useLocationStore.getState().findByPath(initialPath ?? []);
+      if (existingId && state.windows[existingId]?.isOpen) {
+        set((s) => {
+          const win = s.windows[existingId];
+          if (win) {
+            win.isMinimized = false;
+            win.zIndex = s.nextZIndex++;
+          }
+        });
+        return existingId;
+      }
+
+      // Create a new Finder window
       const id = `finder-${state.finderNextId}`;
-      const cascade = state.finderNextId * 30;
+      const openCount = Object.keys(state.windows).filter(
+        (k) => k.startsWith("finder-") && state.windows[k].isOpen
+      ).length;
+      const cascade = openCount * 30;
       set((s) => {
         s.finderNextId++;
         s.windows[id] = {
           ...createWindowConfig('finder'),
           isOpen: true,
           zIndex: s.nextZIndex++,
+          data: initialPath ? { initialPath } : null,
           x: (window.innerWidth - 800) / 2 + cascade,
           y: (window.innerHeight - 500) / 2 + cascade,
         };

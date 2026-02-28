@@ -4,9 +4,11 @@ import { WindowTitleBar } from "@/components/WindowTitleBar";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
+import { isFileViewerData } from "@/constants";
 
 const ImageViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const data = useWindowStore((s) => s.windows.imgFile.data);
+  const rawData = useWindowStore((s) => s.windows.imgFile.data);
+  const data = isFileViewerData(rawData) ? rawData : null;
 
   if (!data) return null;
 

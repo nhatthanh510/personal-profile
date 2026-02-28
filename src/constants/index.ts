@@ -81,10 +81,18 @@ export interface FileViewerData {
   src: string;
 }
 
+export interface FinderInitData {
+  initialPath: string[];
+}
+
+export function isFileViewerData(data: WindowConfig['data']): data is FileViewerData {
+  return !!data && 'title' in data && 'src' in data;
+}
+
 export interface WindowConfig {
   isOpen: boolean;
   zIndex: number;
-  data: FileViewerData | null;
+  data: FileViewerData | FinderInitData | null;
   x: number | null;
   y: number | null;
   width: number;

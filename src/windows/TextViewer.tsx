@@ -5,9 +5,11 @@ import { WindowTitleBar } from "@/components/WindowTitleBar";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
+import { isFileViewerData } from "@/constants";
 
 const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const data = useWindowStore((s) => s.windows.txtFile.data);
+  const rawData = useWindowStore((s) => s.windows.txtFile.data);
+  const data = isFileViewerData(rawData) ? rawData : null;
 
   const [fetched, setFetched] = useState<{ src: string; text: string | null; error: boolean }>({
     src: "",

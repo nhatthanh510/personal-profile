@@ -8,6 +8,7 @@ import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
+import { isFileViewerData } from "@/constants";
 import { Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +36,8 @@ function useDelayedOpen(isOpen: boolean, delay: number) {
 }
 
 const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
-  const data = useWindowStore((s) => s.windows.pdfFile.data);
+  const rawData = useWindowStore((s) => s.windows.pdfFile.data);
+  const data = isFileViewerData(rawData) ? rawData : null;
   const isOpen = useWindowStore((s) => s.windows.pdfFile.isOpen);
 
   const [numPages, setNumPages] = useState<number>(0);

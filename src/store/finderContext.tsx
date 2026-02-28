@@ -4,8 +4,16 @@ import { createFinderStore, type FinderState } from "./finder";
 
 const FinderStoreContext = createContext<StoreApi<FinderState> | null>(null);
 
-export function FinderStoreProvider({ children }: { children: ReactNode }) {
-  const [store] = useState(() => createFinderStore());
+export function FinderStoreProvider({
+  children,
+  windowId,
+  initialPath,
+}: {
+  children: ReactNode;
+  windowId: string;
+  initialPath?: string[];
+}) {
+  const [store] = useState(() => createFinderStore(windowId, initialPath));
   return (
     <FinderStoreContext.Provider value={store}>
       {children}

@@ -1,5 +1,6 @@
 import { createStore } from "zustand";
 import useWindowStore from "@/store/window";
+import useLocationStore from "@/store/location";
 import {
   finderTree,
   findItemById,
@@ -53,14 +54,19 @@ function navigateTo(s: FinderState, newPath: string[]) {
   };
 }
 
-export function createFinderStore() {
-  return createStore<FinderState>((set) => ({
-    currentPath: [],
+export function createFinderStore(windowId: string, initialPath?: string[]) {
+  const startPath = initialPath ?? [];
+
+  // Register initial path in location store
+  useLocationStore.getState().setPath(windowId, startPath);
+
+  const store = createStore<FinderState>((set) => ({
+    currentPath: startPath,
     selectedItem: null,
-    currentItems: getItemsAtPath([]),
-    breadcrumbs: buildBreadcrumbs([]),
+    currentItems: getItemsAtPath(startPath),
+    breadcrumbs: buildBreadcrumbs(startPath),
     sidebarSections: SIDEBAR_SECTIONS,
-    history: [[]],
+    history: [startPath],
     historyIndex: 0,
     canGoBack: false,
     canGoForward: false,
@@ -124,4 +130,13 @@ export function createFinderStore() {
         };
       }),
   }));
+
+  // Auto-sync path changes to location store
+  store.subscribe((state, prev) => {
+    if (state.currentPath !== prev.currentPath) {
+      useLocationStore.getState().setPath(windowId, state.currentPath);
+    }
+  });
+
+  return store;
 }
