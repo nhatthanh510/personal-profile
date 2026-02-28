@@ -1,29 +1,20 @@
-import { useRef, memo } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import type { FinderItem } from "./finderData";
+import useFinderStore from "@/store/finder";
 
-interface FinderContentProps {
-  items: FinderItem[];
-  selectedItem: string | null;
-  onSelect: (id: string) => void;
-  onOpen: (item: FinderItem) => void;
-}
-
-export const FinderContent = memo(function FinderContent({
-  items,
-  selectedItem,
-  onSelect,
-  onOpen,
-}: FinderContentProps) {
+export function FinderContent() {
+  const currentItems = useFinderStore((s) => s.currentItems);
+  const selectedItem = useFinderStore((s) => s.selectedItem);
+  const select = useFinderStore((s) => s.select);
+  const open = useFinderStore((s) => s.open);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // ── GSAP stagger animation on items changing ─────────────────
   useGSAP(
     () => {
-      if (!gridRef.current || items.length === 0) return;
+      if (!gridRef.current || currentItems.length === 0) return;
 
       const children = gridRef.current.querySelectorAll<HTMLElement>(".finder-grid-item");
       if (children.length === 0) return;
@@ -41,10 +32,10 @@ export const FinderContent = memo(function FinderContent({
         }
       );
     },
-    { scope: gridRef, dependencies: [items] }
+    { scope: gridRef, dependencies: [currentItems] }
   );
 
-  if (items.length === 0) {
+  if (currentItems.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center text-[13px] text-[#999]">
         This folder is empty
@@ -61,7 +52,7 @@ export const FinderContent = memo(function FinderContent({
           gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
         }}
       >
-        {items.map((item) => {
+        {currentItems.map((item) => {
           const isSelected = selectedItem === item.id;
 
           return (
@@ -75,8 +66,8 @@ export const FinderContent = memo(function FinderContent({
                   ? "bg-[#0058d0]/10 ring-1 ring-[#0058d0]/30"
                   : "hover:bg-[#f0f0f0]"
               )}
-              onClick={() => onSelect(item.id)}
-              onDoubleClick={() => onOpen(item)}
+              onClick={() => select(item.id)}
+              onDoubleClick={() => open(item)}
             >
               <img
                 src={item.icon}
@@ -98,4 +89,4 @@ export const FinderContent = memo(function FinderContent({
       </div>
     </ScrollArea>
   );
-});
+}

@@ -37,7 +37,7 @@ export const ArticleView = memo(function ArticleView({ article, onBack }: Articl
 
   return (
     <div ref={containerRef} className="flex flex-col h-full">
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         {/* Hero image */}
         <div className="relative w-full aspect-[21/9] overflow-hidden bg-[#f5f5f7]">
           <img

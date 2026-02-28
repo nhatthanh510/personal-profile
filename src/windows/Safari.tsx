@@ -1,19 +1,18 @@
 import { useState, useCallback } from "react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
-import { WindowTitleBar } from "@/components/WindowTitleBar";
+import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Lock,
   PanelLeft,
-  Share,
-  Plus,
-  Shield,
+  RotateCw,
 } from "lucide-react";
 import { articles, type Article } from "./safari/articlesData";
 import { ArticleList } from "./safari/ArticleList";
@@ -103,24 +102,23 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
   return (
     <TooltipProvider delayDuration={300}>
       <WindowShell className="shadow-black/50 border-white/8 bg-white">
-        {/* ── Title bar with address bar ───────────────────────── */}
-        <WindowTitleBar
-          target="safari"
-          titleBarRef={titleBarRef}
-          className="bg-[#f6f6f6] border-b-[#d1d1d1] h-[52px]"
+        {/* ── Unified toolbar ─────────────────────────────────── */}
+        <div
+          ref={titleBarRef}
+          className="flex items-center h-11 bg-[#f6f6f6] border-b border-[#d1d1d1] px-3 gap-1.5 select-none shrink-0 cursor-grab active:cursor-grabbing"
         >
-          <div className="flex items-center w-full max-w-[480px] mx-auto">
-            <div className="flex items-center flex-1 bg-white border border-[#d2d2d7] rounded-lg h-[30px] px-3 gap-1.5 shadow-sm transition-shadow focus-within:shadow-md focus-within:border-[#0071e3]/40">
-              <Lock className="size-3 text-[#86868b] shrink-0" />
-              <span className="text-[12.5px] text-[#3c3c43] truncate select-all leading-none">
-                {currentUrl}
-              </span>
-            </div>
-          </div>
-        </WindowTitleBar>
+          {/* Left group: traffic lights + sidebar + nav */}
+          <WindowControls target="safari" />
 
-        {/* ── Navigation toolbar ───────────────────────────────── */}
-        <div className="flex items-center h-9 bg-[#fafafa] border-b border-[#e5e5e5] px-2.5 gap-0.5 shrink-0">
+          <div className="w-px h-4 bg-[#d5d5d5] mx-2" />
+
+          <NavButton label="Show Sidebar">
+            <PanelLeft className="size-[15px]" strokeWidth={1.8} />
+            <ChevronDown className="size-2.5 -ml-0.5" strokeWidth={2} />
+          </NavButton>
+
+          <div className="w-px h-4 bg-[#d5d5d5] mx-2" />
+
           <NavButton
             label="Back"
             disabled={!canGoBack}
@@ -137,45 +135,23 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
             <ChevronRight className="size-4" strokeWidth={2} />
           </NavButton>
 
-          <div className="w-px h-4 bg-[#e5e5e5] mx-1" />
-
-          <NavButton label="Show Sidebar">
-            <PanelLeft className="size-[15px]" strokeWidth={1.8} />
-          </NavButton>
-
-          <div className="flex-1" />
-
-          <NavButton label="Share">
-            <Share className="size-[14px]" strokeWidth={1.8} />
-          </NavButton>
-
-          <NavButton label="New Tab">
-            <Plus className="size-4" strokeWidth={2} />
-          </NavButton>
-
-          <NavButton label="Privacy Report">
-            <Shield className="size-[14px]" strokeWidth={1.8} />
-          </NavButton>
-        </div>
-
-        {/* ── Tab bar ──────────────────────────────────────────── */}
-        <div className="flex items-center h-[30px] bg-[#f0f0f0] border-b border-[#d9d9d9] px-2 shrink-0">
-          <div className="flex items-center h-full max-w-[220px] bg-white border-x border-t border-[#d1d1d1] rounded-t-md px-3 text-[11.5px] text-[#1d1d1f] font-medium truncate">
-            <span className="truncate">
-              {activeArticle ? activeArticle.title : "Articles"}
-            </span>
+          {/* Center: address bar */}
+          <div className="flex-1 flex justify-center min-w-0">
+            <div className="flex items-center w-full max-w-[480px] bg-white border border-[#d2d2d7] rounded-lg h-[30px] px-3 gap-1.5 shadow-sm">
+              <Lock className="size-3 text-[#86868b] shrink-0" />
+              <span className="flex-1 text-[12.5px] text-[#3c3c43] truncate select-all leading-none text-center">
+                {currentUrl}
+              </span>
+              <RotateCw className="size-3 text-[#86868b] shrink-0" strokeWidth={2} />
+            </div>
           </div>
-          <button
-            type="button"
-            aria-label="New tab"
-            className="flex items-center justify-center size-5 ml-1 rounded text-[#86868b] hover:bg-[#e0e0e0] transition-colors"
-          >
-            <Plus className="size-3" strokeWidth={2.5} />
-          </button>
+
+          {/* Right spacer for visual balance */}
+          <div className="w-[52px] shrink-0" />
         </div>
 
         {/* ── Main content ─────────────────────────────────────── */}
-        <div className="flex-1 min-h-0 bg-[#fafafa]">
+        <div className="flex-1 min-h-0 overflow-hidden bg-[#fafafa]">
           {activeArticle ? (
             <ArticleView article={activeArticle} onBack={handleBackToList} />
           ) : (
