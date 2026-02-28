@@ -64,7 +64,7 @@ function FinderBreadcrumbs() {
   const breadcrumbNavigate = useFinderStore((s) => s.breadcrumbNavigate);
 
   return (
-    <nav className="flex items-center gap-0.5 text-[13px]">
+    <nav className="flex items-center gap-0.5 text-[14px]">
       {breadcrumbs.map((crumb, i) => {
         const isLast = i === breadcrumbs.length - 1;
         return (
@@ -107,7 +107,7 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => (
         {/* Content header: nav buttons + breadcrumbs centered */}
         <div className="flex-1 flex items-center bg-[#e8e8e8] h-full px-3 gap-2">
           <FinderNavButtons />
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center">
             <FinderBreadcrumbs />
           </div>
         </div>
