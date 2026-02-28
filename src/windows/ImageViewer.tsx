@@ -14,18 +14,18 @@ const ImageViewer = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="bg-[#1e1e1e]">
+      <WindowShell className="bg-[rgba(18,20,30,0.85)] backdrop-blur-[20px]">
         <WindowTitleBar
           target="imgFile"
           titleBarRef={titleBarRef}
-          className="bg-[#2d2d2d] border-b-[#1a1a1a]"
+          className="bg-white/[0.06] border-b-white/[0.06]"
         >
           <span className="text-[13px] text-[#ccc] font-medium truncate max-w-[300px]">
             {data.title}
           </span>
         </WindowTitleBar>
 
-        <div className="flex-1 min-h-0 overflow-auto flex items-center justify-center bg-[#1e1e1e] p-4">
+        <div className="flex-1 min-h-0 overflow-auto flex items-center justify-center bg-transparent p-4">
           <img
             src={data.src}
             alt={data.title}

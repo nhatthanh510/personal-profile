@@ -104,31 +104,31 @@ const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="bg-white">
+      <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
         {/* Title bar */}
         <div
           ref={titleBarRef}
           className={cn(
-            "flex items-center h-12 bg-[#e8e8e8] border-b border-[#d1d1d1] px-3 gap-2 select-none shrink-0",
+            "flex items-center h-12 bg-white/[0.06] border-b border-white/[0.06] px-3 gap-2 select-none shrink-0",
             "cursor-grab active:cursor-grabbing"
           )}
         >
           <WindowControls target="pdfFile" />
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-[13px] text-[#333] font-medium truncate max-w-[300px]">
+            <span className="text-[13px] text-white/90 font-medium truncate max-w-[300px]">
               {data.title}
             </span>
           </div>
           <div className="flex items-center gap-2">
             {numPages > 0 && (
-              <span className="text-[11px] text-[#888]">
+              <span className="text-[11px] text-white/40">
                 {currentPage} / {numPages}
               </span>
             )}
             <button
               type="button"
               onClick={handleDownload}
-              className="p-1.5 rounded hover:bg-black/10 text-[#555] hover:text-[#333] transition-colors"
+              className="p-1.5 rounded hover:bg-white/[0.1] text-white/50 hover:text-white/80 transition-colors"
               title="Download"
             >
               <Download className="size-4" />

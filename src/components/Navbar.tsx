@@ -12,8 +12,8 @@ export const Navbar = () => {
   return (
     <nav>
       <div>
-        <img src={"/images/logo.svg"} alt="logo" />
-        <p className="font-bold">Nathan's Portfolio</p>
+        <img src={"/images/logo.svg"} alt="logo" className="invert" />
+        <p className="font-bold text-white">Nathan's Portfolio</p>
        
        <ul>
         {navLinks.map(({id, name}) => (
@@ -28,11 +28,11 @@ export const Navbar = () => {
       <ul>
         {navIcons.map(({id, image}) => (
           <li key={id} className="icon-hover">
-            <img src={image} alt={image} />
+            <img src={image} alt={image} className="invert" />
           </li>
         ))}
       </ul>
-      <time className="text-sm font-medium">
+      <time className="text-sm font-medium text-white/80">
         {time}
       </time>
 

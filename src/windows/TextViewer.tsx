@@ -47,9 +47,9 @@ const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="bg-white">
+      <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
         <WindowTitleBar target="txtFile" titleBarRef={titleBarRef}>
-          <span className="text-[13px] text-[#333] font-medium truncate max-w-[300px]">
+          <span className="text-[13px] text-white/90 font-medium truncate max-w-[300px]">
             {data.title}
           </span>
         </WindowTitleBar>
@@ -61,10 +61,10 @@ const TextViewer = ({ titleBarRef }: WindowWrapperProps) => {
             </div>
           ) : loading || text === null ? (
             <div className="flex items-center justify-center py-20">
-              <span className="text-[13px] text-[#999]">Loading…</span>
+              <span className="text-[13px] text-white/40">Loading…</span>
             </div>
           ) : (
-            <div className="p-5 text-[13px] leading-relaxed text-[#333] font-sans space-y-4">
+            <div className="p-5 text-[13px] leading-relaxed text-white/70 font-sans space-y-4">
               {text.split(/\n\s*\n/).map((paragraph, i) => (
                 <p key={i}>{paragraph.replace(/\n/g, " ")}</p>
               ))}

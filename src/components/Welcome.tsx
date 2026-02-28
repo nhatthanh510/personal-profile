@@ -81,7 +81,7 @@ export const Welcome = () => {
 
   return <section id="welcome">
     <p className="text-white" ref={subtitleRef}>{renderText("Hey, I'm Nathan! Welcome to my", "text-3xl font-georama", 100)}</p>
-    <h1 className="text-white mt-7" ref={titleRef}>{renderText("portfolio", "text-9xl italic font-georama")}</h1>
+    <h1 className="text-white mt-7" ref={titleRef} style={{ textShadow: "0 0 40px rgba(6,182,212,0.3), 0 0 80px rgba(6,182,212,0.15)" }}>{renderText("portfolio", "text-9xl italic font-georama")}</h1>
  
     <div className="small-screen">
       <p>this porfolio is designed for desktop/tablet only</p>

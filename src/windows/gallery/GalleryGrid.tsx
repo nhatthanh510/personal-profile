@@ -34,7 +34,7 @@ export function GalleryGrid() {
   );
 
   return (
-    <ScrollArea className="flex-1 bg-[#1e1e1e]">
+    <ScrollArea className="flex-1 bg-transparent">
       <div
         ref={gridRef}
         className="grid gap-2 p-4"

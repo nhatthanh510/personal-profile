@@ -46,7 +46,7 @@ function DesktopIcon({
         className={cn(
           "text-[11px] leading-tight text-center max-w-[76px] truncate px-1 py-0.5 rounded",
           selected
-            ? "bg-[#3478f6] text-white"
+            ? "bg-[#06b6d4] text-white"
             : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
         )}
       >

@@ -19,7 +19,7 @@ function FinderNavButtons() {
   const canGoForward = useFinderInstance((s) => s.canGoForward);
 
   return (
-    <div className="flex items-center bg-white rounded-2xl shadow-[0_0.5px_2px_rgba(0,0,0,0.08)] shrink-0">
+    <div className="flex items-center bg-white/[0.08] rounded-2xl shrink-0">
       <button
         type="button"
         onClick={goBack}
@@ -30,14 +30,14 @@ function FinderNavButtons() {
           className={cn(
             "flex items-center justify-center size-6 rounded-full transition-colors",
             canGoBack
-              ? "text-[#444] hover:bg-[#d8d8d8]/70 active:bg-[#ccc]/70"
-              : "text-[#c0c0c0] cursor-default"
+              ? "text-white/80 hover:bg-white/[0.1] active:bg-white/[0.15]"
+              : "text-white/25 cursor-default"
           )}
         >
           <ChevronLeft className="size-5" strokeWidth={2.5} />
         </span>
       </button>
-      <div className="w-px h-5 bg-[#ddd]" />
+      <div className="w-px h-5 bg-white/[0.1]" />
       <button
         type="button"
         onClick={goForward}
@@ -48,8 +48,8 @@ function FinderNavButtons() {
           className={cn(
             "flex items-center justify-center size-6 rounded-full transition-colors",
             canGoForward
-              ? "text-[#444] hover:bg-[#d8d8d8]/70 active:bg-[#ccc]/70"
-              : "text-[#c0c0c0] cursor-default"
+              ? "text-white/80 hover:bg-white/[0.1] active:bg-white/[0.15]"
+              : "text-white/25 cursor-default"
           )}
         >
           <ChevronRight className="size-5" strokeWidth={3} />
@@ -71,7 +71,7 @@ function FinderBreadcrumbs() {
         return (
           <div key={crumb.pathIndex} className="flex items-center gap-0.5">
             {i > 0 && (
-              <ChevronRight className="size-3.5 text-[#999] shrink-0" />
+              <ChevronRight className="size-3.5 text-white/30 shrink-0" />
             )}
             <button
               type="button"
@@ -79,8 +79,8 @@ function FinderBreadcrumbs() {
               className={cn(
                 "px-1 py-0.5 rounded transition-colors",
                 isLast
-                  ? "font-semibold text-[#333] cursor-default"
-                  : "text-[#666] hover:text-[#333] hover:bg-[#ddd]/60"
+                  ? "font-semibold text-white/90 cursor-default"
+                  : "text-white/50 hover:text-white/80 hover:bg-white/[0.08]"
               )}
               disabled={isLast}
             >
@@ -107,17 +107,17 @@ export function Finder({ instanceId }: { instanceId: string }) {
       <DynamicWindowWrapper windowId={instanceId} dockAppId="finder">
         {(titleBarRef) => (
           <TooltipProvider delayDuration={300}>
-            <WindowShell className="bg-white">
+            <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
               <div
                 ref={titleBarRef}
-                className="flex items-center h-12 border-b border-[#d1d1d1] select-none shrink-0 cursor-grab active:cursor-grabbing"
+                className="flex items-center h-12 border-b border-white/[0.06] select-none shrink-0 cursor-grab active:cursor-grabbing"
               >
                 {/* Sidebar header: traffic lights */}
-                <div className="w-[180px] shrink-0 flex items-center px-3 bg-[#f5f5f5]/80 h-full border-r border-[#d1d1d1]">
+                <div className="w-[180px] shrink-0 flex items-center px-3 bg-white/[0.04] h-full border-r border-white/[0.06]">
                   <WindowControls target={instanceId} />
                 </div>
                 {/* Content header: nav buttons + breadcrumbs centered */}
-                <div className="flex-1 flex items-center bg-[#e8e8e8] h-full px-3 gap-2">
+                <div className="flex-1 flex items-center bg-white/[0.06] h-full px-3 gap-2">
                   <FinderNavButtons />
                   <div className="flex-1 flex items-center">
                     <FinderBreadcrumbs />

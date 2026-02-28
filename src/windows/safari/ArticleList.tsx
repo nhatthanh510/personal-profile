@@ -41,10 +41,10 @@ export const ArticleList = memo(function ArticleList({ articles, onSelect }: Art
         <button
           key={article.id}
           type="button"
-          className="article-card group text-left rounded-lg border border-[#e5e5e5] bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:border-[#d0d0d0] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/40"
+          className="article-card group text-left rounded-lg border border-white/[0.08] bg-white/[0.05] overflow-hidden transition-all duration-200 hover:bg-white/[0.08] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#06b6d4]/40"
           onClick={() => onSelect(article)}
         >
-          <div className="aspect-[16/9] overflow-hidden bg-[#f5f5f7]">
+          <div className="aspect-[16/9] overflow-hidden bg-white/[0.03]">
             <img
               src={article.thumbnail}
               alt={article.title}
@@ -55,7 +55,7 @@ export const ArticleList = memo(function ArticleList({ articles, onSelect }: Art
           </div>
 
           <div className="p-3.5">
-            <div className="flex items-center gap-3 text-[11px] text-[#86868b] mb-2">
+            <div className="flex items-center gap-3 text-[11px] text-white/40 mb-2">
               <span className="flex items-center gap-1">
                 <Calendar className="size-3" />
                 {article.date}
@@ -66,11 +66,11 @@ export const ArticleList = memo(function ArticleList({ articles, onSelect }: Art
               </span>
             </div>
 
-            <h3 className="text-[13px] font-semibold text-[#1d1d1f] leading-snug mb-1.5 line-clamp-2 group-hover:text-[#0071e3] transition-colors">
+            <h3 className="text-[13px] font-semibold text-white/90 leading-snug mb-1.5 line-clamp-2 group-hover:text-[#22d3ee] transition-colors">
               {article.title}
             </h3>
 
-            <p className="text-[12px] text-[#6e6e73] leading-relaxed line-clamp-2 mb-3">
+            <p className="text-[12px] text-white/50 leading-relaxed line-clamp-2 mb-3">
               {article.excerpt}
             </p>
 
@@ -78,7 +78,7 @@ export const ArticleList = memo(function ArticleList({ articles, onSelect }: Art
               {article.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="text-[10px] font-medium text-[#0071e3] bg-[#0071e3]/8 rounded-full px-2 py-0.5"
+                  className="text-[10px] font-medium text-[#06b6d4] bg-[#06b6d4]/10 rounded-full px-2 py-0.5"
                 >
                   {tag}
                 </span>

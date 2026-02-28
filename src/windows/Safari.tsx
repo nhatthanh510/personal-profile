@@ -41,8 +41,8 @@ function NavButton({
       className={cn(
         "flex items-center justify-center size-7 rounded-md transition-colors",
         disabled
-          ? "text-[#c7c7cc] cursor-default"
-          : "text-[#3c3c43] hover:bg-[#e8e8ed] active:bg-[#dcdce0]",
+          ? "text-white/25 cursor-default"
+          : "text-white/70 hover:bg-white/[0.1] active:bg-white/[0.15]",
         className
       )}
     >
@@ -101,23 +101,23 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="shadow-black/50 border-white/8 bg-white">
+      <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
         {/* ── Unified toolbar ─────────────────────────────────── */}
         <div
           ref={titleBarRef}
-          className="flex items-center h-11 bg-[#f6f6f6] border-b border-[#d1d1d1] px-3 gap-1.5 select-none shrink-0 cursor-grab active:cursor-grabbing"
+          className="flex items-center h-11 bg-white/[0.06] border-b border-white/[0.06] px-3 gap-1.5 select-none shrink-0 cursor-grab active:cursor-grabbing"
         >
           {/* Left group: traffic lights + sidebar + nav */}
           <WindowControls target="safari" />
 
-          <div className="w-px h-4 bg-[#d5d5d5] mx-2" />
+          <div className="w-px h-4 bg-white/[0.1] mx-2" />
 
           <NavButton label="Show Sidebar">
             <PanelLeft className="size-[15px]" strokeWidth={1.8} />
             <ChevronDown className="size-2.5 -ml-0.5" strokeWidth={2} />
           </NavButton>
 
-          <div className="w-px h-4 bg-[#d5d5d5] mx-2" />
+          <div className="w-px h-4 bg-white/[0.1] mx-2" />
 
           <NavButton
             label="Back"
@@ -137,12 +137,12 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
 
           {/* Center: address bar */}
           <div className="flex-1 flex justify-center min-w-0">
-            <div className="flex items-center w-full max-w-[480px] bg-white border border-[#d2d2d7] rounded-lg h-[30px] px-3 gap-1.5 shadow-sm">
-              <Lock className="size-3 text-[#86868b] shrink-0" />
-              <span className="flex-1 text-[12.5px] text-[#3c3c43] truncate select-all leading-none text-center">
+            <div className="flex items-center w-full max-w-[480px] bg-white/[0.08] border border-white/[0.08] rounded-lg h-[30px] px-3 gap-1.5">
+              <Lock className="size-3 text-white/40 shrink-0" />
+              <span className="flex-1 text-[12.5px] text-white/70 truncate select-all leading-none text-center">
                 {currentUrl}
               </span>
-              <RotateCw className="size-3 text-[#86868b] shrink-0" strokeWidth={2} />
+              <RotateCw className="size-3 text-white/40 shrink-0" strokeWidth={2} />
             </div>
           </div>
 
@@ -151,16 +151,16 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
         </div>
 
         {/* ── Main content ─────────────────────────────────────── */}
-        <div className="flex-1 min-h-0 overflow-hidden bg-[#fafafa]">
+        <div className="flex-1 min-h-0 overflow-hidden bg-transparent">
           {activeArticle ? (
             <ArticleView article={activeArticle} onBack={handleBackToList} />
           ) : (
             <ScrollArea className="h-full">
               <div className="px-5 pt-5 pb-2">
-                <h2 className="text-[18px] font-bold text-[#1d1d1f] mb-0.5">
+                <h2 className="text-[18px] font-bold text-white/90 mb-0.5">
                   Articles
                 </h2>
-                <p className="text-[13px] text-[#86868b]">
+                <p className="text-[13px] text-white/40">
                   Thoughts on web development, architecture, and design
                 </p>
               </div>
