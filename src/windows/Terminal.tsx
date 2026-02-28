@@ -121,7 +121,7 @@ const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
 
         <ScrollArea
           ref={scrollRef}
-          className="flex-1 bg-[#1e1e1e]/95 backdrop-blur-xl"
+          className="flex-1 overflow-hidden bg-[#1e1e1e]/95 backdrop-blur-xl"
         >
           <div onClick={focusInput} className="p-3 font-roboto text-[13px] leading-normal cursor-text min-h-full">
             {lines.map((line) => (

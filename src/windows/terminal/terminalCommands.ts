@@ -40,14 +40,16 @@ function renderBar(level: number, width = 20): string {
 // ── ASCII welcome ─────────────────────────────────────────────────
 export const ASCII_WELCOME: string[] = [
   "",
-  "  ╔══════════════════════════════════════════════╗",
-  "  ║                                              ║",
-  "  ║   Welcome to my interactive portfolio!       ║",
-  "  ║   Type 'help' to see available commands.     ║",
-  "  ║                                              ║",
-  "  ╚══════════════════════════════════════════════╝",
+  "  +--------------------------------------------+",
+  "  |                                            |",
+  "  |   Welcome to my interactive portfolio!     |",
+  "  |   Type 'help' to see available commands.   |",
+  "  |                                            |",
+  "  +--------------------------------------------+",
   "",
 ];
+
+
 
 // ── Command processor ─────────────────────────────────────────────
 export function processCommand(cmd: string): string[] {
@@ -70,10 +72,9 @@ export function processCommand(cmd: string): string[] {
         "  contact       Contact information",
         "  projects      Notable projects",
         "  experience    Work experience",
-        "  whoami        Who is the visitor?",
         "  date          Current date & time",
         "  clear         Clear terminal",
-        "  neofetch      System info",
+        "  tech          Tech stack",
         "",
       ];
 
@@ -151,31 +152,24 @@ export function processCommand(cmd: string): string[] {
         "",
       ];
 
-    case "whoami":
-      return ["", "  visitor – a curious person exploring this portfolio", ""];
-
     case "date":
-      return ["", `  ${new Date().toString()}`, ""];
+      return ["", ` ${new Date().toString()}`, ""];
 
-    case "neofetch":
+    case "tech":
       return [
         "",
-        "                    'c.          visitor@portfolio",
-        "                 ,xNMM.          ─────────────────",
-        "               .OMMMMo           OS: macOS Portfolio",
-        "               OMMM0,            Shell: zsh 5.9",
-        "     .;loddo:' loolloddol;.      Terminal: portfolio-term",
-        "   cKMMMMMMMMMMNWMMMMMMMMMM0:    Theme: Dark Mode",
-        "  .KMMMMMMMMMMMMMMMMMMMMMMMWK.   Resolution: ∞ × ∞",
-        "  XMMMMMMMMMMMMMMMMMMMMMMMMMX.   Framework: React 19",
-        " ;MMMMMMMMMMMMMMMMMMMMMMMMMM:    Bundler: Vite 7",
-        " :MMMMMMMMMMMMMMMMMMMMMMMMMM:    Language: TypeScript",
-        " .MMMMMMMMMMMMMMMMMMMMMMMMMMX.   Styling: Tailwind v4",
-        "  kMMMMMMMMMMMMMMMMMMMMMMMMWd.   State: Zustand",
-        "  .XMMMMMMMMMMMMMMMMMMMMMMMMk    Animations: GSAP",
-        "   .XMMMMMMMMMMMMMMMMMMMMK.",
-        "     kMMMMMMMMMMMMMMMMMMd.",
-        "      ;KMMMMMMMWXXWMMMKo.",
+        "  Tech Stack:",
+        "  -------------------",
+        "  OS:         macOS Tahoe",
+        "  Shell:      zsh 5.9",
+        "  Theme:      Dark Mode",
+        "  AI Agent:   Claude Code",
+        "  Framework:  React 19",
+        "  Bundler:    Vite 7",
+        "  Language:   TypeScript",
+        "  Styling:    Tailwind v4",
+        "  State:      Zustand",
+        "  Animations: GSAP",
         "",
       ];
 
