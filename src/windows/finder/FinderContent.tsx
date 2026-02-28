@@ -3,13 +3,13 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import useFinderStore from "@/store/finder";
+import { useFinderInstance } from "@/store/finderContext";
 
 export function FinderContent() {
-  const currentItems = useFinderStore((s) => s.currentItems);
-  const selectedItem = useFinderStore((s) => s.selectedItem);
-  const select = useFinderStore((s) => s.select);
-  const open = useFinderStore((s) => s.open);
+  const currentItems = useFinderInstance((s) => s.currentItems);
+  const selectedItem = useFinderInstance((s) => s.selectedItem);
+  const select = useFinderInstance((s) => s.select);
+  const open = useFinderInstance((s) => s.open);
   const gridRef = useRef<HTMLDivElement>(null);
 
   useGSAP(

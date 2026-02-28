@@ -1,21 +1,20 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import WindowWrapper from "@/hoc/WindowWrapper";
-import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
+import { DynamicWindowWrapper } from "@/hoc/DynamicWindowWrapper";
 import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-import useFinderStore from "@/store/finder";
+import { FinderStoreProvider, useFinderInstance } from "@/store/finderContext";
 import { FinderSidebar } from "./finder/FinderSidebar";
 import { FinderContent } from "./finder/FinderContent";
 
 // ── Back / Forward buttons (macOS pill style) ────────────────────
 function FinderNavButtons() {
-  const goBack = useFinderStore((s) => s.goBack);
-  const goForward = useFinderStore((s) => s.goForward);
-  const canGoBack = useFinderStore((s) => s.canGoBack);
-  const canGoForward = useFinderStore((s) => s.canGoForward);
+  const goBack = useFinderInstance((s) => s.goBack);
+  const goForward = useFinderInstance((s) => s.goForward);
+  const canGoBack = useFinderInstance((s) => s.canGoBack);
+  const canGoForward = useFinderInstance((s) => s.canGoForward);
 
   return (
     <div className="flex items-center bg-white rounded-2xl shadow-[0_0.5px_2px_rgba(0,0,0,0.08)] shrink-0">
@@ -60,8 +59,8 @@ function FinderNavButtons() {
 
 // ── Breadcrumb nav ───────────────────────────────────────────────
 function FinderBreadcrumbs() {
-  const breadcrumbs = useFinderStore((s) => s.breadcrumbs);
-  const breadcrumbNavigate = useFinderStore((s) => s.breadcrumbNavigate);
+  const breadcrumbs = useFinderInstance((s) => s.breadcrumbs);
+  const breadcrumbNavigate = useFinderInstance((s) => s.breadcrumbNavigate);
 
   return (
     <nav className="flex items-center gap-0.5 text-[14px]">
@@ -93,33 +92,38 @@ function FinderBreadcrumbs() {
 }
 
 // ── Finder ───────────────────────────────────────────────────────
-const Finder = ({ titleBarRef }: WindowWrapperProps) => (
-  <TooltipProvider delayDuration={300}>
-    <WindowShell className="bg-white">
-      <div
-        ref={titleBarRef}
-        className="flex items-center h-12 border-b border-[#d1d1d1] select-none shrink-0 cursor-grab active:cursor-grabbing"
-      >
-        {/* Sidebar header: traffic lights */}
-        <div className="w-[180px] shrink-0 flex items-center px-3 bg-[#f5f5f5]/80 h-full border-r border-[#d1d1d1]">
-          <WindowControls target="finder" />
-        </div>
-        {/* Content header: nav buttons + breadcrumbs centered */}
-        <div className="flex-1 flex items-center bg-[#e8e8e8] h-full px-3 gap-2">
-          <FinderNavButtons />
-          <div className="flex-1 flex items-center">
-            <FinderBreadcrumbs />
-          </div>
-        </div>
-      </div>
+export function Finder({ instanceId }: { instanceId: string }) {
+  return (
+    <FinderStoreProvider>
+      <DynamicWindowWrapper windowId={instanceId} dockAppId="finder">
+        {(titleBarRef) => (
+          <TooltipProvider delayDuration={300}>
+            <WindowShell className="bg-white">
+              <div
+                ref={titleBarRef}
+                className="flex items-center h-12 border-b border-[#d1d1d1] select-none shrink-0 cursor-grab active:cursor-grabbing"
+              >
+                {/* Sidebar header: traffic lights */}
+                <div className="w-[180px] shrink-0 flex items-center px-3 bg-[#f5f5f5]/80 h-full border-r border-[#d1d1d1]">
+                  <WindowControls target={instanceId} />
+                </div>
+                {/* Content header: nav buttons + breadcrumbs centered */}
+                <div className="flex-1 flex items-center bg-[#e8e8e8] h-full px-3 gap-2">
+                  <FinderNavButtons />
+                  <div className="flex-1 flex items-center">
+                    <FinderBreadcrumbs />
+                  </div>
+                </div>
+              </div>
 
-      <div className="flex flex-1 min-h-0">
-        <FinderSidebar />
-        <FinderContent />
-      </div>
-    </WindowShell>
-  </TooltipProvider>
-);
-
-const FinderWindow = WindowWrapper(Finder, "finder");
-export { FinderWindow };
+              <div className="flex flex-1 min-h-0">
+                <FinderSidebar />
+                <FinderContent />
+              </div>
+            </WindowShell>
+          </TooltipProvider>
+        )}
+      </DynamicWindowWrapper>
+    </FinderStoreProvider>
+  );
+}

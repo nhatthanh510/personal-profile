@@ -2,10 +2,8 @@ import { memo } from "react";
 import { Maximize2, Minus, X, Minimize2 } from "lucide-react";
 import useWindowStore from "@/store/window";
 import { useShallow } from "zustand/react/shallow";
-import type { WindowKey } from "@/constants";
-
 interface WindowControlsProps {
-  target: WindowKey;
+  target: string;
 }
 
 const TrafficLightButton = memo(({

@@ -16,12 +16,14 @@ const getMagnification = (distance: number): number => {
 };
 
 export const Dock = () => {
-  const { windows, openWindow, closeWindow, unminimizeWindow } = useWindowStore(
+  const { windows, openWindow, closeWindow, unminimizeWindow, focusWindow, openNewFinder } = useWindowStore(
     useShallow((s) => ({
       windows: s.windows,
       openWindow: s.openWindow,
       closeWindow: s.closeWindow,
       unminimizeWindow: s.unminimizeWindow,
+      focusWindow: s.focusWindow,
+      openNewFinder: s.openNewFinder,
     }))
   );
   const dockRef = useRef<HTMLDivElement>(null);
@@ -85,6 +87,35 @@ export const Dock = () => {
 
   const toggleApp = useCallback((app: DockApp) => {
     if (!app.canOpen) return;
+
+    // Special handling for finder — multi-instance
+    if (app.id === "finder") {
+      const finderEntries = Object.entries(windows).filter(([k]) => k.startsWith("finder-"));
+
+      if (finderEntries.length === 0) {
+        // No instances exist → open a new one
+        openNewFinder();
+        return;
+      }
+
+      const visibleEntries = finderEntries.filter(([, w]) => w.isOpen && !w.isMinimized);
+      const minimizedEntries = finderEntries.filter(([, w]) => w.isOpen && w.isMinimized);
+
+      if (visibleEntries.length === 0 && minimizedEntries.length > 0) {
+        // All minimized → unminimize the most recent one (highest zIndex)
+        const [topId] = minimizedEntries.reduce((a, b) => a[1].zIndex > b[1].zIndex ? a : b);
+        unminimizeWindow(topId);
+      } else if (visibleEntries.length > 0) {
+        // Some visible → focus the topmost one
+        const [topId] = visibleEntries.reduce((a, b) => a[1].zIndex > b[1].zIndex ? a : b);
+        focusWindow(topId);
+      } else {
+        // All closed (shouldn't happen since closed entries are removed, but fallback)
+        openNewFinder();
+      }
+      return;
+    }
+
     const key = app.id as WindowKey;
     const win = windows[key];
     if (win.isMinimized) {
@@ -94,9 +125,15 @@ export const Dock = () => {
     } else {
       openWindow(key);
     }
-  }, [windows, openWindow, closeWindow, unminimizeWindow]);
+  }, [windows, openWindow, closeWindow, unminimizeWindow, focusWindow, openNewFinder]);
 
   const trashIndex = useMemo(() => dockApps.findIndex(app => app.id === 'trash'), []);
+
+  // Check if any finder instances exist for the dock dot
+  const hasFinderInstances = useMemo(
+    () => Object.keys(windows).some((k) => k.startsWith("finder-")),
+    [windows]
+  );
 
   return (
     <section id="dock">
@@ -104,35 +141,41 @@ export const Dock = () => {
         ref={dockRef}
         className="dock-container"
       >
-        {dockApps.map(({ id, icon, name, canOpen }, index) => (
-          <div key={id} className="flex items-end">
-            {index === trashIndex && trashIndex > 0 && (
-              <div className="dock-separator" />
-            )}
-            <div className="dock-item">
-              <button
-                type="button"
-                className="dock-icon"
-                aria-label={name}
-                data-app={id}
-                data-tooltip-id="dock-tooltip"
-                data-tooltip-content={name}
-                data-tooltip-delay-show={100}
-                disabled={!canOpen}
-                onClick={() => toggleApp({ id, name, icon, canOpen })}
-              >
-                <img
-                  src={`/images/${icon}`}
-                  alt={name}
-                  loading="lazy"
-                  draggable={false}
-                  className={canOpen ? '' : 'opacity-60'}
-                />
-              </button>
-              {canOpen && <div className="dock-dot" />}
+        {dockApps.map(({ id, icon, name, canOpen }, index) => {
+          const showDot = id === "finder"
+            ? hasFinderInstances
+            : canOpen && windows[id]?.isOpen;
+
+          return (
+            <div key={id} className="flex items-end">
+              {index === trashIndex && trashIndex > 0 && (
+                <div className="dock-separator" />
+              )}
+              <div className="dock-item">
+                <button
+                  type="button"
+                  className="dock-icon"
+                  aria-label={name}
+                  data-app={id}
+                  data-tooltip-id="dock-tooltip"
+                  data-tooltip-content={name}
+                  data-tooltip-delay-show={100}
+                  disabled={!canOpen}
+                  onClick={() => toggleApp({ id, name, icon, canOpen })}
+                >
+                  <img
+                    src={`/images/${icon}`}
+                    alt={name}
+                    loading="lazy"
+                    draggable={false}
+                    className={canOpen ? '' : 'opacity-60'}
+                  />
+                </button>
+                {showDot && <div className="dock-dot" />}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <Tooltip id="dock-tooltip" place="top" className="dock-tooltip" />
       </div>
     </section>

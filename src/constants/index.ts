@@ -122,12 +122,14 @@ function createWindowConfig(key: string): WindowConfig {
   };
 }
 
-export const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
+export const WINDOW_KEYS = ['contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
 
 export type WindowKey = (typeof WINDOW_KEYS)[number];
 
-export type WindowsConfig = Record<WindowKey, WindowConfig>;
+export type WindowsConfig = Record<string, WindowConfig>;
 
 export const WINDOWS_CONFIG: WindowsConfig = Object.fromEntries(
   WINDOW_KEYS.map(k => [k, createWindowConfig(k)])
-) as WindowsConfig;
+);
+
+export { createWindowConfig };

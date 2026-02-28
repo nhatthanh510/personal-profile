@@ -1,11 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import useFinderStore from "@/store/finder";
+import { useFinderInstance } from "@/store/finderContext";
 
 export function FinderSidebar() {
-  const sidebarSections = useFinderStore((s) => s.sidebarSections);
-  const currentPath = useFinderStore((s) => s.currentPath);
-  const sidebarNavigate = useFinderStore((s) => s.sidebarNavigate);
+  const sidebarSections = useFinderInstance((s) => s.sidebarSections);
+  const currentPath = useFinderInstance((s) => s.currentPath);
+  const sidebarNavigate = useFinderInstance((s) => s.sidebarNavigate);
   const activeId = currentPath[0] ?? null;
 
   return (
