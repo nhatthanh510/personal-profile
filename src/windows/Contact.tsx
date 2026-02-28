@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
 import { WindowTitleBar } from "@/components/WindowTitleBar";
@@ -18,6 +18,11 @@ const socials = [
 const Contact = ({ titleBarRef }: WindowWrapperProps) => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -30,7 +35,8 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
     (e: React.FormEvent) => {
       e.preventDefault();
       setSent(true);
-      setTimeout(() => setSent(false), 3000);
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setSent(false), 3000);
       setForm({ name: "", email: "", message: "" });
     },
     []

@@ -1,9 +1,10 @@
 import { type RefObject, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { WindowControls } from "./WindowControls";
+import type { WindowKey } from "@/constants";
 
 interface WindowTitleBarProps {
-  target: string;
+  target: WindowKey;
   titleBarRef: RefObject<HTMLDivElement | null>;
   children?: ReactNode;
   className?: string;

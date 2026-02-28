@@ -36,10 +36,6 @@ const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
     }
   }, [lines]);
 
-  const focusInput = useCallback(() => {
-    inputRef.current?.focus();
-  }, []);
-
   const handleSubmit = useCallback(() => {
     const newLines: TerminalLine[] = [];
     const id = () => nextId.current++;
@@ -123,7 +119,7 @@ const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
           ref={scrollRef}
           className="flex-1 overflow-hidden bg-[#1e1e1e]/95 backdrop-blur-xl"
         >
-          <div onClick={focusInput} className="p-3 font-roboto text-[13px] leading-normal cursor-text min-h-full">
+          <div onClick={() => inputRef.current?.focus()} className="p-3 font-roboto text-[13px] leading-normal cursor-text min-h-full">
             {lines.map((line) => (
               <div key={line.id} className="whitespace-pre-wrap break-all">
                 {line.type === "input" ? (

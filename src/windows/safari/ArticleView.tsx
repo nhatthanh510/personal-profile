@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ChevronLeft, Calendar, Clock } from "lucide-react";
@@ -10,7 +10,7 @@ interface ArticleViewProps {
   onBack: () => void;
 }
 
-export function ArticleView({ article, onBack }: ArticleViewProps) {
+export const ArticleView = memo(function ArticleView({ article, onBack }: ArticleViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -108,4 +108,4 @@ export function ArticleView({ article, onBack }: ArticleViewProps) {
       </ScrollArea>
     </div>
   );
-}
+});

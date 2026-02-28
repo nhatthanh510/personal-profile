@@ -169,36 +169,6 @@ const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
           </Document>
         </div>
       </WindowShell>
-
-      <style>{`
-        .pdf-scroll {
-          background: #d4d4d4;
-        }
-        .pdf-scroll .react-pdf__Page {
-          width: 100% !important;
-          margin: 0 !important;
-          position: relative;
-          overflow: hidden;
-        }
-        .pdf-scroll .react-pdf__Page canvas {
-          width: 100% !important;
-          height: auto !important;
-          display: block;
-        }
-        .pdf-scroll .react-pdf__Page .react-pdf__Page__textContent {
-          width: ${RENDER_WIDTH}px !important;
-          transform: scale(var(--pdf-scale, 1));
-          transform-origin: 0 0;
-        }
-        .pdf-scroll .react-pdf__Page .react-pdf__Page__annotations {
-          width: ${RENDER_WIDTH}px !important;
-          transform: scale(var(--pdf-scale, 1));
-          transform-origin: 0 0;
-        }
-        .pdf-scroll .react-pdf__Page + .react-pdf__Page {
-          margin-top: 8px !important;
-        }
-      `}</style>
     </TooltipProvider>
   );
 };

@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, memo } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +12,7 @@ interface FinderContentProps {
   onOpen: (item: FinderItem) => void;
 }
 
-export function FinderContent({
+export const FinderContent = memo(function FinderContent({
   items,
   selectedItem,
   onSelect,
@@ -42,20 +42,6 @@ export function FinderContent({
       );
     },
     { scope: gridRef, dependencies: [items] }
-  );
-
-  const handleDoubleClick = useCallback(
-    (item: FinderItem) => {
-      onOpen(item);
-    },
-    [onOpen]
-  );
-
-  const handleClick = useCallback(
-    (id: string) => {
-      onSelect(id);
-    },
-    [onSelect]
   );
 
   if (items.length === 0) {
@@ -89,8 +75,8 @@ export function FinderContent({
                   ? "bg-[#0058d0]/10 ring-1 ring-[#0058d0]/30"
                   : "hover:bg-[#f0f0f0]"
               )}
-              onClick={() => handleClick(item.id)}
-              onDoubleClick={() => handleDoubleClick(item)}
+              onClick={() => onSelect(item.id)}
+              onDoubleClick={() => onOpen(item)}
             >
               <img
                 src={item.icon}
@@ -112,4 +98,4 @@ export function FinderContent({
       </div>
     </ScrollArea>
   );
-}
+});

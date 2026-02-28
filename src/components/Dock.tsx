@@ -1,10 +1,11 @@
-import { dockApps, type DockApp } from "@/constants";
-import { useRef, useMemo } from "react";
+import { dockApps, type DockApp, type WindowKey } from "@/constants";
+import { useRef, useMemo, useCallback } from "react";
 import { Tooltip } from 'react-tooltip';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { DOCK_CONFIG } from "@/constants";
 import useWindowStore from "@/store/window";
+import { useShallow } from "zustand/react/shallow";
 
 /** Gaussian falloff: 1 at distance=0, tapering to ~0 at magnifyRange */
 const getMagnification = (distance: number): number => {
@@ -15,10 +16,14 @@ const getMagnification = (distance: number): number => {
 };
 
 export const Dock = () => {
-  const windows = useWindowStore((s) => s.windows);
-  const openWindow = useWindowStore((s) => s.openWindow);
-  const closeWindow = useWindowStore((s) => s.closeWindow);
-  const unminimizeWindow = useWindowStore((s) => s.unminimizeWindow);
+  const { windows, openWindow, closeWindow, unminimizeWindow } = useWindowStore(
+    useShallow((s) => ({
+      windows: s.windows,
+      openWindow: s.openWindow,
+      closeWindow: s.closeWindow,
+      unminimizeWindow: s.unminimizeWindow,
+    }))
+  );
   const dockRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLElement[]>([]);
 
@@ -78,17 +83,18 @@ export const Dock = () => {
     };
   }, { scope: dockRef });
 
-  const toggleApp = (app: DockApp) => {
+  const toggleApp = useCallback((app: DockApp) => {
     if (!app.canOpen) return;
-    const win = windows[app.id];
+    const key = app.id as WindowKey;
+    const win = windows[key];
     if (win.isMinimized) {
-      unminimizeWindow(app.id);
+      unminimizeWindow(key);
     } else if (win.isOpen) {
-      closeWindow(app.id);
+      closeWindow(key);
     } else {
-      openWindow(app.id);
+      openWindow(key);
     }
-  };
+  }, [windows, openWindow, closeWindow, unminimizeWindow]);
 
   const trashIndex = useMemo(() => dockApps.findIndex(app => app.id === 'trash'), []);
 

@@ -76,10 +76,6 @@ const Gallery = ({ titleBarRef }: WindowWrapperProps) => {
     { scope: lightboxRef, dependencies: [selectedIndex] }
   );
 
-  const openImage = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
   const closeImage = useCallback(() => {
     setSelectedIndex(null);
   }, []);
@@ -160,7 +156,7 @@ const Gallery = ({ titleBarRef }: WindowWrapperProps) => {
                   key={img.id}
                   type="button"
                   className="gallery-thumb group relative rounded-lg overflow-hidden cursor-pointer opacity-0 aspect-[4/3]"
-                  onClick={() => openImage(index)}
+                  onClick={() => setSelectedIndex(index)}
                 >
                   <img
                     src={img.src}

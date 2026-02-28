@@ -1,4 +1,5 @@
 import useWindowStore from "@/store/window";
+import { useShallow } from "zustand/react/shallow";
 import { useGSAP } from "@gsap/react";
 import {
   useRef,
@@ -13,15 +14,20 @@ import {
 } from "react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
+import type { WindowKey } from "@/constants";
 export interface WindowWrapperProps {
   titleBarRef: RefObject<HTMLDivElement | null>;
 }
 
-const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: string) => {
+const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: WindowKey) => {
   const WrappedComponent = (props: Omit<ComponentProps<typeof Component>, keyof WindowWrapperProps>) => {
-    const win = useWindowStore((s) => s.windows[windowKey]);
-    const focusWindow = useWindowStore((s) => s.focusWindow);
-    const updatePosition = useWindowStore((s) => s.updatePosition);
+    const { win, focusWindow, updatePosition } = useWindowStore(
+      useShallow((s) => ({
+        win: s.windows[windowKey],
+        focusWindow: s.focusWindow,
+        updatePosition: s.updatePosition,
+      }))
+    );
     const { isOpen, zIndex, isMinimized, isMaximized, x, y, width, height } = win;
 
     const windowRef = useRef<HTMLDivElement>(null);

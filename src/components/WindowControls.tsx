@@ -1,11 +1,14 @@
+import { memo } from "react";
 import { Maximize2, Minus, X, Minimize2 } from "lucide-react";
 import useWindowStore from "@/store/window";
+import { useShallow } from "zustand/react/shallow";
+import type { WindowKey } from "@/constants";
 
 interface WindowControlsProps {
-  target: string;
+  target: WindowKey;
 }
 
-const TrafficLightButton = ({
+const TrafficLightButton = memo(({
   color,
   hoverIcon: Icon,
   iconColor,
@@ -19,6 +22,7 @@ const TrafficLightButton = ({
   onClick?: () => void;
 }) => (
     <button
+      type="button"
       onClick={onClick}
       className={`group size-3 rounded-full flex-center transition-all hover:brightness-90 ${color}`}
       aria-label={label}
@@ -28,13 +32,17 @@ const TrafficLightButton = ({
         strokeWidth={3}
       />
     </button>
-);
+));
 
 export const WindowControls = ({ target }: WindowControlsProps) => {
-  const isMaximized = useWindowStore((s) => s.windows[target]?.isMaximized);
-  const closeWindow = useWindowStore((s) => s.closeWindow);
-  const minimizeWindow = useWindowStore((s) => s.minimizeWindow);
-  const toggleMaximize = useWindowStore((s) => s.toggleMaximize);
+  const { isMaximized, closeWindow, minimizeWindow, toggleMaximize } = useWindowStore(
+    useShallow((s) => ({
+      isMaximized: s.windows[target]?.isMaximized,
+      closeWindow: s.closeWindow,
+      minimizeWindow: s.minimizeWindow,
+      toggleMaximize: s.toggleMaximize,
+    }))
+  );
 
   return (
     <div className="flex items-center gap-[7px] cursor-default">

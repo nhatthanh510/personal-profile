@@ -53,19 +53,19 @@ const setupTextHover = (container: HTMLElement | null, type: keyof typeof FONT_W
     container.removeEventListener('mouseleave', handleMouseLeave);
   }
 }
+const renderText = (text: string, className: string, baseWeight = 400) => {
+  return [...text].map((char, index) => {
+    return (
+      <span key={index} className={className} style={{
+        fontVariationSettings: `'wght' ${baseWeight}`,
+       }}>
+        {char === ' ' ? '\u00A0' : char}
+      </span>
+    )
+  })
+}
+
 export const Welcome = () => {
-  const renderText = (text: string, className: string, baseWeight = 400) => {
-    return [...text].map((char, index) => {
-      return (
-        <span key={index} className={className} style={{ 
-          fontVariationSettings: `'wght' ${baseWeight}`,
-         }}>
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      )
-    })
-  }
-  
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
 

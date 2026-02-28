@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import WindowWrapper from "@/hoc/WindowWrapper";
 import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
@@ -14,7 +14,7 @@ import {
   finderTree,
   findItemById,
   getItemsAtPath,
-  getSidebarSections,
+  SIDEBAR_SECTIONS,
   type FinderItem,
 } from "./finder/finderData";
 
@@ -25,7 +25,6 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
-  const sections = getSidebarSections();
   const currentItems = getItemsAtPath(currentPath);
 
   // ── Sidebar navigation → jump to top-level folder ────────────
@@ -80,15 +79,18 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
   );
 
   // ── Build breadcrumb labels ──────────────────────────────────
-  const breadcrumbs: { label: string; pathIndex: number }[] = [
-    { label: "Finder", pathIndex: -1 },
-  ];
-  for (let i = 0; i < currentPath.length; i++) {
-    const item = findItemById(currentPath[i], finderTree);
-    if (item) {
-      breadcrumbs.push({ label: item.name, pathIndex: i });
+  const breadcrumbs = useMemo(() => {
+    const crumbs: { label: string; pathIndex: number }[] = [
+      { label: "Finder", pathIndex: -1 },
+    ];
+    for (let i = 0; i < currentPath.length; i++) {
+      const item = findItemById(currentPath[i], finderTree);
+      if (item) {
+        crumbs.push({ label: item.name, pathIndex: i });
+      }
     }
-  }
+    return crumbs;
+  }, [currentPath]);
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -125,7 +127,7 @@ const Finder = ({ titleBarRef }: WindowWrapperProps) => {
         {/* ── Body: Sidebar + Content ──────────────────────────── */}
         <div className="flex flex-1 min-h-0">
           <FinderSidebar
-            sections={sections}
+            sections={SIDEBAR_SECTIONS}
             activePath={currentPath}
             onNavigate={handleSidebarNavigate}
           />

@@ -1,17 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { INITIAL_INDEX, WINDOWS_CONFIG, type WindowsConfig, type FileViewerData } from '@/constants';
+import { INITIAL_INDEX, WINDOWS_CONFIG, type WindowsConfig, type WindowKey, type FileViewerData } from '@/constants';
 
 interface WindowState {
   windows: WindowsConfig;
   nextZIndex: number;
-  openWindow: (windowKey: string, data?: FileViewerData | null) => void;
-  closeWindow: (windowKey: string) => void;
-  focusWindow: (windowKey: string) => void;
-  minimizeWindow: (windowKey: string) => void;
-  unminimizeWindow: (windowKey: string) => void;
-  toggleMaximize: (windowKey: string) => void;
-  updatePosition: (windowKey: string, x: number, y: number) => void;
+  openWindow: (windowKey: WindowKey, data?: FileViewerData | null) => void;
+  closeWindow: (windowKey: WindowKey) => void;
+  focusWindow: (windowKey: WindowKey) => void;
+  minimizeWindow: (windowKey: WindowKey) => void;
+  unminimizeWindow: (windowKey: WindowKey) => void;
+  toggleMaximize: (windowKey: WindowKey) => void;
+  updatePosition: (windowKey: WindowKey, x: number, y: number) => void;
 }
 
 const useWindowStore = create<WindowState, [['zustand/immer', never]]>(

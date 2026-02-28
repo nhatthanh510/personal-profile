@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { SidebarSection } from "./finderData";
@@ -8,7 +9,7 @@ interface FinderSidebarProps {
   onNavigate: (id: string) => void;
 }
 
-export function FinderSidebar({
+export const FinderSidebar = memo(function FinderSidebar({
   sections,
   activePath,
   onNavigate,
@@ -60,4 +61,4 @@ export function FinderSidebar({
       </ScrollArea>
     </div>
   );
-}
+});

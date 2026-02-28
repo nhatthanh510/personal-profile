@@ -140,18 +140,16 @@ export interface SidebarSection {
   items: { id: string; name: string; icon: string }[];
 }
 
-export function getSidebarSections(): SidebarSection[] {
-  return [
-    {
-      label: "Favorites",
-      items: finderTree.map((item) => ({
-        id: item.id,
-        name: item.name,
-        icon: item.icon,
-      })),
-    },
-  ];
-}
+export const SIDEBAR_SECTIONS: SidebarSection[] = [
+  {
+    label: "Favorites",
+    items: finderTree.map((item) => ({
+      id: item.id,
+      name: item.name,
+      icon: item.icon,
+    })),
+  },
+];
 
 // ── Utility: find an item by ID in the tree ──────────────────────
 export function findItemById(

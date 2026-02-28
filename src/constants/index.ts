@@ -94,8 +94,6 @@ export interface WindowConfig {
   prevGeometry: WindowGeometry | null;
 }
 
-export type WindowsConfig = Record<string, WindowConfig>;
-
 export const WINDOW_DEFAULTS: Record<string, { width: number; height: number }> = {
   finder:   { width: 800, height: 500 },
   safari:   { width: 900, height: 560 },
@@ -124,8 +122,12 @@ function createWindowConfig(key: string): WindowConfig {
   };
 }
 
-const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
+export const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
+
+export type WindowKey = (typeof WINDOW_KEYS)[number];
+
+export type WindowsConfig = Record<WindowKey, WindowConfig>;
 
 export const WINDOWS_CONFIG: WindowsConfig = Object.fromEntries(
   WINDOW_KEYS.map(k => [k, createWindowConfig(k)])
-);
+) as WindowsConfig;

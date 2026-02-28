@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Clock, Calendar } from "lucide-react";
@@ -9,7 +9,7 @@ interface ArticleListProps {
   onSelect: (article: Article) => void;
 }
 
-export function ArticleList({ articles, onSelect }: ArticleListProps) {
+export const ArticleList = memo(function ArticleList({ articles, onSelect }: ArticleListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -89,4 +89,4 @@ export function ArticleList({ articles, onSelect }: ArticleListProps) {
       ))}
     </div>
   );
-}
+});
