@@ -12,7 +12,14 @@ export const navIcons = [
 ];
 
 
-export const dockApps = [
+export interface DockApp {
+  id: string;
+  name: string;
+  icon: string;
+  canOpen: boolean;
+}
+
+export const dockApps: DockApp[] = [
   {
     id: 'finder',
     name: "Portfolio",
@@ -59,3 +66,60 @@ export const DOCK_CONFIG = {
   animDuration: 0.3,
   bounceDuration: 0.6,
 } as const;
+
+export const INITIAL_INDEX = 1000;
+
+export interface WindowGeometry {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface WindowConfig {
+  isOpen: boolean;
+  zIndex: number;
+  data: unknown;
+  x: number | null;
+  y: number | null;
+  width: number;
+  height: number;
+  isMinimized: boolean;
+  isMaximized: boolean;
+  prevGeometry: WindowGeometry | null;
+}
+
+export type WindowsConfig = Record<string, WindowConfig>;
+
+export const WINDOW_DEFAULTS: Record<string, { width: number; height: number }> = {
+  finder:   { width: 800, height: 500 },
+  safari:   { width: 900, height: 560 },
+  photos:   { width: 860, height: 540 },
+  contact:  { width: 700, height: 480 },
+  terminal: { width: 680, height: 460 },
+  resume:   { width: 640, height: 500 },
+  txtFile:  { width: 600, height: 400 },
+  imgFile:  { width: 720, height: 500 },
+};
+
+function createWindowConfig(key: string): WindowConfig {
+  const defaults = WINDOW_DEFAULTS[key] ?? { width: 680, height: 460 };
+  return {
+    isOpen: false,
+    zIndex: INITIAL_INDEX,
+    data: null,
+    x: null,
+    y: null,
+    width: defaults.width,
+    height: defaults.height,
+    isMinimized: false,
+    isMaximized: false,
+    prevGeometry: null,
+  };
+}
+
+const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile'] as const;
+
+export const WINDOWS_CONFIG: WindowsConfig = Object.fromEntries(
+  WINDOW_KEYS.map(k => [k, createWindowConfig(k)])
+);

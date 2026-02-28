@@ -1,9 +1,10 @@
-import { dockApps } from "@/constants";
+import { dockApps, type DockApp } from "@/constants";
 import { useRef } from "react";
 import { Tooltip } from 'react-tooltip';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { DOCK_CONFIG } from "@/constants";
+import useWindowStore from "@/store/window";
 
 /** Gaussian falloff: 1 at distance=0, tapering to ~0 at magnifyRange */
 const getMagnification = (distance: number): number => {
@@ -14,6 +15,7 @@ const getMagnification = (distance: number): number => {
 };
 
 export const Dock = () => {
+  const { windows, openWindow, closeWindow, unminimizeWindow } = useWindowStore();
   const dockRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLElement[]>([]);
 
@@ -84,9 +86,16 @@ export const Dock = () => {
       .to(icon, { y: 0, duration: 0.2, ease: "bounce.out" });
   };
 
-  const toggleApp = (id: string, index: number) => {
-    const item = itemsRef.current[index];
-    if (item) bounceIcon(item);
+  const toggleApp = (app: DockApp) => {
+    if (!app.canOpen) return;
+    const win = windows[app.id];
+    if (win.isMinimized) {
+      unminimizeWindow(app.id);
+    } else if (win.isOpen) {
+      closeWindow(app.id);
+    } else {
+      openWindow(app.id);
+    }
   };
 
   const trashIndex = dockApps.findIndex(app => app.id === 'trash');
@@ -107,11 +116,12 @@ export const Dock = () => {
                 type="button"
                 className="dock-icon"
                 aria-label={name}
+                data-app={id}
                 data-tooltip-id="dock-tooltip"
                 data-tooltip-content={name}
                 data-tooltip-delay-show={100}
                 disabled={!canOpen}
-                onClick={() => toggleApp(id, index)}
+                onClick={() => toggleApp({ id, name, icon, canOpen })}
               >
                 <img
                   src={`/images/${icon}`}
