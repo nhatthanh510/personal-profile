@@ -1,7 +1,7 @@
 import { useRef, memo } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ChevronLeft, Calendar, Clock } from "lucide-react";
+import { ChevronLeft, Calendar, Clock, ExternalLink } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Article } from "./articlesData";
 
@@ -31,9 +31,11 @@ export const ArticleView = memo(function ArticleView({ article, onBack }: Articl
     { scope: containerRef }
   );
 
-  const paragraphs = article.content
-    .split("\n\n")
-    .filter((p) => p.trim().length > 0);
+  const hasExternalSource = Boolean(article.sourceUrl && article.sourceName);
+  const paragraphs =
+    article.content?.trim().length > 0
+      ? article.content.split("\n\n").filter((p) => p.trim().length > 0)
+      : [];
 
   return (
     <div ref={containerRef} className="flex flex-col h-full">
@@ -93,17 +95,34 @@ export const ArticleView = memo(function ArticleView({ article, onBack }: Articl
           {/* Divider */}
           <div className="h-px bg-white/[0.08] mb-5" />
 
-          {/* Content */}
-          <div className="space-y-4 pb-6">
-            {paragraphs.map((paragraph, i) => (
-              <p
-                key={i}
-                className="text-[14px] text-white/60 leading-[1.7] tracking-[-0.003em]"
-              >
-                {paragraph}
+          {/* Content: external source → excerpt + CTA; else full content */}
+          {hasExternalSource ? (
+            <div className="space-y-4 pb-6">
+              <p className="text-[14px] text-white/60 leading-[1.7] tracking-[-0.003em]">
+                {article.excerpt}
               </p>
-            ))}
-          </div>
+              <a
+                href={article.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#06b6d4] hover:text-[#22d3ee] transition-colors"
+              >
+                <span>Read full article on {article.sourceName}</span>
+                <ExternalLink className="size-4" />
+              </a>
+            </div>
+          ) : (
+            <div className="space-y-4 pb-6">
+              {paragraphs.map((paragraph, i) => (
+                <p
+                  key={i}
+                  className="text-[14px] text-white/60 leading-[1.7] tracking-[-0.003em]"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>

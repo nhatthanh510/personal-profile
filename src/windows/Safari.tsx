@@ -16,7 +16,8 @@ import {
   PanelLeft,
   RotateCw,
 } from "lucide-react";
-import { articles, type Article } from "./safari/articlesData";
+import { useArticles } from "./safari/useArticles";
+import { type Article } from "./safari/articlesData";
 import { ArticleList } from "./safari/ArticleList";
 import { ArticleView } from "./safari/ArticleView";
 
@@ -57,9 +58,11 @@ function NavButton({
 const Safari = ({ titleBarRef }: WindowWrapperProps) => {
   const isCompact = useIsCompact();
   const closeWindow = useWindowStore((s) => s.closeWindow);
+  const { articles, loading, error, retry } = useArticles();
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
   const [history, setHistory] = useState<Article[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const currentUrl = activeArticle
     ? activeArticle.url
@@ -103,6 +106,10 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
     setActiveArticle(null);
   }, []);
 
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
+
   return (
     <TooltipProvider delayDuration={300}>
       <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
@@ -135,9 +142,14 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
 
               <div className="w-px h-4 bg-white/[0.1] mx-2" />
 
-              <NavButton label="Show Sidebar">
-                <PanelLeft className="size-[15px]" strokeWidth={1.8} />
-                <ChevronDown className="size-2.5 -ml-0.5" strokeWidth={2} />
+              <NavButton label={sidebarOpen ? "Hide Sidebar" : "Show Sidebar"} onClick={toggleSidebar}>
+                <span className="flex items-center justify-center gap-1">
+                  <PanelLeft className="size-4 shrink-0" strokeWidth={1.8} />
+                  <ChevronDown
+                    className={cn("size-3 shrink-0 transition-transform", sidebarOpen && "rotate-180")}
+                    strokeWidth={2}
+                  />
+                </span>
               </NavButton>
 
               <div className="w-px h-4 bg-white/[0.1] mx-2" />
@@ -175,7 +187,39 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
         </div>
 
         {/* ── Main content ─────────────────────────────────────── */}
-        <div className="flex-1 min-h-0 overflow-hidden bg-transparent">
+        <div className="flex-1 min-h-0 overflow-hidden bg-transparent flex">
+          {!isCompact && sidebarOpen && (
+            <aside
+              className="w-52 shrink-0 border-r border-white/[0.08] bg-white/[0.04] flex flex-col"
+              aria-label="Sidebar"
+            >
+              <div className="p-3 border-b border-white/[0.06]">
+                <h3 className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">
+                  Reading List
+                </h3>
+              </div>
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="p-2">
+                  {articles.slice(0, 12).map((article) => (
+                    <button
+                      key={article.id}
+                      type="button"
+                      onClick={() => handleSelectArticle(article)}
+                      className={cn(
+                        "w-full text-left px-2 py-1.5 rounded-md text-[12px] transition-colors",
+                        activeArticle?.id === article.id
+                          ? "bg-[#06b6d4]/20 text-[#06b6d4]"
+                          : "text-white/70 hover:bg-white/[0.06] hover:text-white/90"
+                      )}
+                    >
+                      <span className="line-clamp-2">{article.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </aside>
+          )}
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           {activeArticle ? (
             <ArticleView article={activeArticle} onBack={handleBackToList} />
           ) : (
@@ -185,12 +229,31 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
                   Articles
                 </h2>
                 <p className="text-[13px] text-white/40">
-                  Thoughts on web development, architecture, and design
+                  Curated from Dev.to — React, TypeScript, and web development
                 </p>
               </div>
-              <ArticleList articles={articles} onSelect={handleSelectArticle} />
+              {error ? (
+                <div className="px-5 py-8 flex flex-col items-center gap-3 text-center">
+                  <p className="text-[13px] text-white/50">{error}</p>
+                  <button
+                    type="button"
+                    onClick={retry}
+                    className="text-[13px] text-[#06b6d4] hover:text-[#22d3ee] underline"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : loading ? (
+                <div className="px-5 py-8 flex flex-col items-center gap-3">
+                  <div className="size-8 border-2 border-white/20 border-t-[#06b6d4] rounded-full animate-spin" />
+                  <p className="text-[13px] text-white/50">Loading articles…</p>
+                </div>
+              ) : (
+                <ArticleList articles={articles} onSelect={handleSelectArticle} />
+              )}
             </ScrollArea>
           )}
+          </div>
         </div>
       </WindowShell>
     </TooltipProvider>

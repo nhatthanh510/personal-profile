@@ -133,11 +133,11 @@ export function processCommand(cmd: string): string[] {
     case "contact":
       return [
         "",
-        "  ┌─ Contact ──────────────────────────────┐",
-        "  │  Email    → hello@example.com           │",
-        "  │  GitHub   → github.com/nhatthanh510     │",
-        "  │  LinkedIn → linkedin.com/in/nhatthanh   │",
-        "  └──────────────────────────────────────────┘",
+        "  ┌─ Contact ──────────────────────────────────────┐",
+        "  │  Email    → nhatthanh510@gmail.com               │",
+        "  │  GitHub   → github.com/nhatthanh510              │",
+        "  │  LinkedIn → linkedin.com/in/thanh-nguyen-14162911a │",
+        "  └──────────────────────────────────────────────────┘",
         "",
       ];
 
