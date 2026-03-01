@@ -23,7 +23,7 @@ const BOOT_LINES = [
   '[  0.872600] Starting desktop environment...',
 ]
 
-const BOOT_DURATION = 10 // seconds
+const BOOT_DURATION = 1 // seconds
 const LINE_INTERVAL = (BOOT_DURATION * 1000) / BOOT_LINES.length // sync lines with progress bar
 
 interface BootScreenProps {
@@ -35,6 +35,9 @@ export function BootScreen({ onComplete }: BootScreenProps) {
   const completedRef = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const progressTrackRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<SVGSVGElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
   const linesEndRef = useRef<HTMLDivElement>(null)
   const tlRef = useRef<gsap.core.Timeline | null>(null)
   const lineTimersRef = useRef<number[]>([])
@@ -46,17 +49,37 @@ export function BootScreen({ onComplete }: BootScreenProps) {
     lineTimersRef.current.forEach(clearTimeout)
 
     const container = containerRef.current
-    if (!container) {
+    const logo = logoRef.current
+    const progressTrack = progressTrackRef.current
+    const log = logRef.current
+    if (!container || !logo || !progressTrack) {
       onComplete()
       return
     }
 
-    gsap.to(container, {
+    // Exit sequence: logo falls, rest fades, then screen out
+    const exitTl = gsap.timeline({ onComplete })
+
+    // Progress bar + boot log fade out
+    exitTl.to([progressTrack, log], {
       opacity: 0,
-      duration: 0.4,
+      duration: 0.3,
       ease: 'power2.in',
-      onComplete,
     })
+
+    // Logo drops down off screen with gentle gravity
+    exitTl.to(logo, {
+      y: '120vh',
+      duration: 1.4,
+      ease: 'power2.in',
+    }, '<')
+
+    // Screen fades out as logo falls
+    exitTl.to(container, {
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power2.in',
+    }, '-=0.3')
   }, [onComplete])
 
   // GSAP progress bar + staggered boot lines
@@ -75,16 +98,17 @@ export function BootScreen({ onComplete }: BootScreenProps) {
       .to(bar, { width: '100%', duration: BOOT_DURATION * 0.2, ease: 'power2.inOut' })
 
     // Boot lines — staggered to match progress duration
+    const timers = lineTimersRef.current
     BOOT_LINES.forEach((line, i) => {
       const id = window.setTimeout(() => {
         setVisibleLines(prev => [...prev, line])
       }, i * LINE_INTERVAL)
-      lineTimersRef.current.push(id)
+      timers.push(id)
     })
 
     return () => {
       tl.kill()
-      lineTimersRef.current.forEach(clearTimeout)
+      timers.forEach(clearTimeout)
     }
   }, [finish])
 
@@ -115,6 +139,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
       <div className="flex flex-1 flex-col items-center justify-center">
         {/* Apple logo */}
         <svg
+          ref={logoRef}
           className="mb-20 h-14 w-14 text-white"
           viewBox="0 0 814 1000"
           fill="currentColor"
@@ -123,7 +148,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
         </svg>
 
         {/* Progress bar */}
-        <div className="h-1.5 w-52 overflow-hidden rounded-full bg-white/20">
+        <div ref={progressTrackRef} className="h-1.5 w-52 overflow-hidden rounded-full bg-white/20">
           <div
             ref={progressRef}
             className="h-full w-0 rounded-full bg-white"
@@ -132,7 +157,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
       </div>
 
       {/* Bottom: scrolling boot log */}
-      <div className="h-36 overflow-hidden border-t border-white/5 px-4 py-3 font-roboto text-[10px] leading-snug text-[#4ade80]/60 sm:px-8 sm:text-xs">
+      <div ref={logRef} className="h-36 overflow-hidden border-t border-white/5 px-4 py-3 font-roboto text-[10px] leading-snug text-[#4ade80]/60 sm:px-8 sm:text-xs">
         <div className="flex flex-col">
           {visibleLines.map((line, i) => (
             <span key={i}>{line}</span>
