@@ -56,18 +56,18 @@ body {
   }
 
   nav {
-    @apply flex justify-between items-center bg-transparent p-2 px-5 select-none;
+    @apply flex justify-between items-center bg-transparent p-2 px-3 sm:px-5 select-none;
 
     div {
-      @apply flex items-center max-sm:w-full max-sm:justify-center gap-5;
+      @apply flex items-center gap-3 sm:gap-5;
 
       &:last-child {
-        @apply max-sm:hidden;
+        @apply max-lg:hidden;
       }
     }
 
     ul {
-      @apply flex items-center gap-5 max-sm:hidden;
+      @apply flex items-center gap-5 max-lg:hidden;
 
       p {
         @apply text-sm text-white/80 cursor-pointer hover:underline transition-all;
@@ -77,26 +77,24 @@ body {
   }
 
   #welcome {
-    @apply relative flex flex-col items-center justify-center h-[calc(100dvh-3rem)];
-  }
-
-  .small-screen {
-    @apply absolute bottom-10 text-sm text-white/40 sm:hidden;
+    @apply relative flex flex-col items-center justify-center h-[calc(100dvh-3rem)] px-4;
+    @apply max-lg:justify-start max-lg:pt-10 max-lg:pb-6;
   }
 
   #dock {
-    @apply fixed bottom-2 left-1/2 -translate-x-1/2 z-50;
+    @apply fixed bottom-2 left-1/2 -translate-x-1/2 z-50 max-lg:w-[calc(100%-2rem)] max-lg:max-w-sm;
   }
 
   .dock-container {
     @apply flex items-end gap-0.5 rounded-2xl px-2 pb-1.5 pt-1 border border-white/12;
+    @apply max-lg:justify-around max-lg:gap-0 max-lg:rounded-3xl max-lg:px-3 max-lg:pb-2 max-lg:pt-1.5;
     background: rgba(22,24,35,0.55);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
   }
 
   .dock-separator {
-    @apply w-px h-10 bg-white/15 mx-1.5 self-center shrink-0;
+    @apply w-px h-10 bg-white/15 mx-1.5 self-center shrink-0 max-lg:h-8 max-lg:mx-0.5;
   }
 
   .dock-item {
@@ -104,8 +102,17 @@ body {
     width: 50px;
   }
 
+  @media (max-width: 1023px) {
+    .dock-item {
+      width: auto;
+      flex: 1;
+      max-width: 56px;
+    }
+  }
+
   .dock-icon {
     @apply cursor-pointer origin-bottom will-change-transform h-11 w-11;
+    @apply max-lg:h-10 max-lg:w-10;
 
     img {
       @apply w-full h-full object-contain select-none;

@@ -8,8 +8,9 @@ import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useWindowStore from "@/store/window";
+import { useIsCompact } from "@/hooks/use-mobile";
 import { isFileViewerData } from "@/constants";
-import { Download } from "lucide-react";
+import { ChevronLeft, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -36,6 +37,8 @@ function useDelayedOpen(isOpen: boolean, delay: number) {
 }
 
 const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
+  const isCompact = useIsCompact();
+  const closeWindow = useWindowStore((s) => s.closeWindow);
   const rawData = useWindowStore((s) => s.windows.pdfFile.data);
   const data = isFileViewerData(rawData) ? rawData : null;
   const isOpen = useWindowStore((s) => s.windows.pdfFile.isOpen);
@@ -110,10 +113,21 @@ const PDFViewer = ({ titleBarRef }: WindowWrapperProps) => {
           ref={titleBarRef}
           className={cn(
             "flex items-center h-12 bg-white/[0.06] border-b border-white/[0.06] px-3 gap-2 select-none shrink-0",
-            "cursor-grab active:cursor-grabbing"
+            !isCompact && "cursor-grab active:cursor-grabbing"
           )}
         >
-          <WindowControls target="pdfFile" />
+          {isCompact ? (
+            <button
+              type="button"
+              className="flex items-center gap-0.5 text-[#007AFF] text-sm font-normal shrink-0"
+              onClick={() => closeWindow("pdfFile")}
+            >
+              <ChevronLeft className="size-5" strokeWidth={2.5} />
+              <span>Go Back</span>
+            </button>
+          ) : (
+            <WindowControls target="pdfFile" />
+          )}
           <div className="flex-1 flex items-center justify-center">
             <span className="text-[13px] text-white/90 font-medium truncate max-w-[300px]">
               {data.title}

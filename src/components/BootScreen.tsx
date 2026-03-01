@@ -133,14 +133,14 @@ export function BootScreen({ onComplete }: BootScreenProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] flex flex-col bg-black"
+      className="fixed inset-0 z-9999 flex flex-col bg-black"
     >
       {/* Center: Apple logo + progress bar */}
       <div className="flex flex-1 flex-col items-center justify-center">
         {/* Apple logo */}
         <svg
           ref={logoRef}
-          className="mb-20 h-14 w-14 text-white"
+          className="mb-12 sm:mb-20 h-10 w-10 sm:h-14 sm:w-14 text-white"
           viewBox="0 0 814 1000"
           fill="currentColor"
         >
@@ -148,7 +148,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
         </svg>
 
         {/* Progress bar */}
-        <div ref={progressTrackRef} className="h-1.5 w-52 overflow-hidden rounded-full bg-white/20">
+        <div ref={progressTrackRef} className="h-1 sm:h-1.5 w-40 sm:w-52 overflow-hidden rounded-full bg-white/20">
           <div
             ref={progressRef}
             className="h-full w-0 rounded-full bg-white"

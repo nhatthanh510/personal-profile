@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react';
 import { DOCK_CONFIG } from "@/constants";
 import useWindowStore from "@/store/window";
 import { useShallow } from "zustand/react/shallow";
+import { useIsCompact, useIsMobile } from "@/hooks/use-mobile";
 
 /** Gaussian falloff: 1 at distance=0, tapering to ~0 at magnifyRange */
 const getMagnification = (distance: number): number => {
@@ -16,6 +17,12 @@ const getMagnification = (distance: number): number => {
 };
 
 export const Dock = () => {
+  const isCompact = useIsCompact();
+  const isMobile = useIsMobile();
+  const displayedApps = useMemo(
+    () => (isMobile ? dockApps.slice(0, 4) : dockApps),
+    [isMobile]
+  );
   const { windows, openWindow, closeWindow, unminimizeWindow, focusWindow, openNewFinder } = useWindowStore(
     useShallow((s) => ({
       windows: s.windows,
@@ -29,9 +36,10 @@ export const Dock = () => {
   const dockRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLElement[]>([]);
 
+  // Magnification only on non-compact (desktop) screens
   useGSAP(() => {
     const dock = dockRef.current;
-    if (!dock) return;
+    if (!dock || isCompact) return;
 
     const items = dock.querySelectorAll<HTMLElement>('.dock-item');
     itemsRef.current = Array.from(items);
@@ -83,7 +91,7 @@ export const Dock = () => {
       dock.removeEventListener('mousemove', handleMouseMove);
       dock.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, { scope: dockRef });
+  }, { scope: dockRef, dependencies: [isCompact] });
 
   const toggleApp = useCallback((app: DockApp) => {
     if (!app.canOpen) return;
@@ -127,7 +135,10 @@ export const Dock = () => {
     }
   }, [windows, openWindow, closeWindow, unminimizeWindow, focusWindow, openNewFinder]);
 
-  const trashIndex = useMemo(() => dockApps.findIndex(app => app.id === 'trash'), []);
+  const trashIndex = useMemo(
+    () => displayedApps.findIndex((app) => app.id === "trash"),
+    [displayedApps]
+  );
 
   // Check if any finder instances exist for the dock dot
   const hasFinderInstances = useMemo(
@@ -141,7 +152,7 @@ export const Dock = () => {
         ref={dockRef}
         className="dock-container"
       >
-        {dockApps.map(({ id, icon, name, canOpen }, index) => {
+        {displayedApps.map(({ id, icon, name, canOpen }, index) => {
           const showDot = id === "finder"
             ? hasFinderInstances
             : canOpen && windows[id]?.isOpen;
@@ -157,7 +168,7 @@ export const Dock = () => {
                   className="dock-icon"
                   aria-label={name}
                   data-app={id}
-                  data-tooltip-id="dock-tooltip"
+                  data-tooltip-id={isCompact ? undefined : "dock-tooltip"}
                   data-tooltip-content={name}
                   data-tooltip-delay-show={100}
                   disabled={!canOpen}
@@ -176,7 +187,7 @@ export const Dock = () => {
             </div>
           );
         })}
-        <Tooltip id="dock-tooltip" place="top" className="dock-tooltip" />
+        {!isCompact && <Tooltip id="dock-tooltip" place="top" className="dock-tooltip" />}
       </div>
     </section>
   );

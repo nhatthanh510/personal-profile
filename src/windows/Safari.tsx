@@ -6,6 +6,8 @@ import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useIsCompact } from "@/hooks/use-mobile";
+import useWindowStore from "@/store/window";
 import {
   ChevronDown,
   ChevronLeft,
@@ -53,6 +55,8 @@ function NavButton({
 
 // ── Safari Component ───────────────────────────────────────────────
 const Safari = ({ titleBarRef }: WindowWrapperProps) => {
+  const isCompact = useIsCompact();
+  const closeWindow = useWindowStore((s) => s.closeWindow);
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
   const [history, setHistory] = useState<Article[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -102,52 +106,72 @@ const Safari = ({ titleBarRef }: WindowWrapperProps) => {
   return (
     <TooltipProvider delayDuration={300}>
       <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
-        {/* ── Unified toolbar ─────────────────────────────────── */}
+        {/* ── Toolbar ─────────────────────────────────────────── */}
         <div
           ref={titleBarRef}
-          className="flex items-center h-11 bg-white/[0.06] border-b border-white/[0.06] px-3 gap-1.5 select-none shrink-0 cursor-grab active:cursor-grabbing"
+          className={cn(
+            "flex items-center bg-white/[0.06] border-b border-white/[0.06] px-3 gap-1.5 select-none shrink-0",
+            isCompact ? "h-12" : "h-11 cursor-grab active:cursor-grabbing"
+          )}
         >
-          {/* Left group: traffic lights + sidebar + nav */}
-          <WindowControls target="safari" />
+          {isCompact ? (
+            <>
+              <button
+                type="button"
+                className="flex items-center gap-0.5 text-[#007AFF] text-sm font-normal shrink-0"
+                onClick={() => closeWindow("safari")}
+              >
+                <ChevronLeft className="size-5" strokeWidth={2.5} />
+                <span>Go Back</span>
+              </button>
+              <div className="flex-1 flex items-center justify-center">
+                <span className="text-[15px] font-semibold text-white/90">Safari</span>
+              </div>
+              <div className="w-[72px]" />
+            </>
+          ) : (
+            <>
+              <WindowControls target="safari" />
 
-          <div className="w-px h-4 bg-white/[0.1] mx-2" />
+              <div className="w-px h-4 bg-white/[0.1] mx-2" />
 
-          <NavButton label="Show Sidebar">
-            <PanelLeft className="size-[15px]" strokeWidth={1.8} />
-            <ChevronDown className="size-2.5 -ml-0.5" strokeWidth={2} />
-          </NavButton>
+              <NavButton label="Show Sidebar">
+                <PanelLeft className="size-[15px]" strokeWidth={1.8} />
+                <ChevronDown className="size-2.5 -ml-0.5" strokeWidth={2} />
+              </NavButton>
 
-          <div className="w-px h-4 bg-white/[0.1] mx-2" />
+              <div className="w-px h-4 bg-white/[0.1] mx-2" />
 
-          <NavButton
-            label="Back"
-            disabled={!canGoBack}
-            onClick={handleBack}
-          >
-            <ChevronLeft className="size-4" strokeWidth={2} />
-          </NavButton>
+              <NavButton
+                label="Back"
+                disabled={!canGoBack}
+                onClick={handleBack}
+              >
+                <ChevronLeft className="size-4" strokeWidth={2} />
+              </NavButton>
 
-          <NavButton
-            label="Forward"
-            disabled={!canGoForward}
-            onClick={handleForward}
-          >
-            <ChevronRight className="size-4" strokeWidth={2} />
-          </NavButton>
+              <NavButton
+                label="Forward"
+                disabled={!canGoForward}
+                onClick={handleForward}
+              >
+                <ChevronRight className="size-4" strokeWidth={2} />
+              </NavButton>
 
-          {/* Center: address bar */}
-          <div className="flex-1 flex justify-center min-w-0">
-            <div className="flex items-center w-full max-w-[480px] bg-white/[0.08] border border-white/[0.08] rounded-lg h-[30px] px-3 gap-1.5">
-              <Lock className="size-3 text-white/40 shrink-0" />
-              <span className="flex-1 text-[12.5px] text-white/70 truncate select-all leading-none text-center">
-                {currentUrl}
-              </span>
-              <RotateCw className="size-3 text-white/40 shrink-0" strokeWidth={2} />
-            </div>
-          </div>
+              {/* Center: address bar */}
+              <div className="flex-1 flex justify-center min-w-0">
+                <div className="flex items-center w-full max-w-[480px] bg-white/[0.08] border border-white/[0.08] rounded-lg h-[30px] px-3 gap-1.5">
+                  <Lock className="size-3 text-white/40 shrink-0" />
+                  <span className="flex-1 text-[12.5px] text-white/70 truncate select-all leading-none text-center">
+                    {currentUrl}
+                  </span>
+                  <RotateCw className="size-3 text-white/40 shrink-0" strokeWidth={2} />
+                </div>
+              </div>
 
-          {/* Right spacer for visual balance */}
-          <div className="w-[52px] shrink-0" />
+              <div className="w-[52px] shrink-0" />
+            </>
+          )}
         </div>
 
         {/* ── Main content ─────────────────────────────────────── */}

@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useFinderInstance } from "@/store/finderContext";
+import { useIsCompact } from "@/hooks/use-mobile";
 
 export function FinderContent() {
   const currentItems = useFinderInstance((s) => s.currentItems);
@@ -11,6 +12,7 @@ export function FinderContent() {
   const select = useFinderInstance((s) => s.select);
   const open = useFinderInstance((s) => s.open);
   const gridRef = useRef<HTMLDivElement>(null);
+  const isCompact = useIsCompact();
 
   useGSAP(
     () => {
@@ -66,8 +68,8 @@ export function FinderContent() {
                   ? "bg-[#06b6d4]/15 ring-1 ring-[#06b6d4]/30"
                   : "hover:bg-white/[0.06]"
               )}
-              onClick={() => select(item.id)}
-              onDoubleClick={() => open(item)}
+              onClick={() => isCompact ? open(item) : select(item.id)}
+              onDoubleClick={isCompact ? undefined : () => open(item)}
             >
               <img
                 src={item.icon}

@@ -5,6 +5,7 @@ import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import useWindowStore from "@/store/window";
+import { useIsCompact } from "@/hooks/use-mobile";
 import type { FinderInitData } from "@/constants";
 
 import { FinderStoreProvider, useFinderInstance } from "@/store/finderContext";
@@ -93,12 +94,76 @@ function FinderBreadcrumbs() {
   );
 }
 
+// ── Mobile title (current folder only) ────────────────────────────
+function FinderTitle() {
+  const breadcrumbs = useFinderInstance((s) => s.breadcrumbs);
+  const current = breadcrumbs[breadcrumbs.length - 1];
+
+  return (
+    <span className="text-[15px] font-semibold text-white/90 truncate">
+      {current?.label ?? "Finder"}
+    </span>
+  );
+}
+
 // ── Finder ───────────────────────────────────────────────────────
 function isFinderInitData(data: unknown): data is FinderInitData {
   return !!data && typeof data === "object" && "initialPath" in data;
 }
 
+function FinderTitleBar({ instanceId, titleBarRef }: { instanceId: string; titleBarRef: React.RefObject<HTMLDivElement | null> }) {
+  const isCompact = useIsCompact();
+  const closeWindow = useWindowStore((s) => s.closeWindow);
+  const goBack = useFinderInstance((s) => s.goBack);
+  const canGoBack = useFinderInstance((s) => s.canGoBack);
+
+  const handleCompactBack = () => {
+    if (canGoBack) goBack();
+    else closeWindow(instanceId);
+  };
+
+  if (isCompact) {
+    return (
+      <div
+        ref={titleBarRef}
+        className="flex items-center h-12 bg-white/[0.06] border-b border-white/[0.06] px-3 select-none shrink-0"
+      >
+        <button
+          type="button"
+          className="flex items-center gap-0.5 text-[#007AFF] text-sm font-normal shrink-0"
+          onClick={handleCompactBack}
+        >
+          <ChevronLeft className="size-5" strokeWidth={2.5} />
+          <span>{canGoBack ? "Back" : "Go Back"}</span>
+        </button>
+        <div className="flex-1 flex items-center justify-center">
+          <FinderTitle />
+        </div>
+        <div className="w-[72px]" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={titleBarRef}
+      className="flex items-center h-12 border-b border-white/[0.06] select-none shrink-0 cursor-grab active:cursor-grabbing"
+    >
+      <div className="w-[180px] shrink-0 flex items-center px-3 bg-white/[0.04] h-full border-r border-white/[0.06]">
+        <WindowControls target={instanceId} />
+      </div>
+      <div className="flex-1 flex items-center bg-white/[0.06] h-full px-3 gap-2">
+        <FinderNavButtons />
+        <div className="flex-1 flex items-center">
+          <FinderBreadcrumbs />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Finder({ instanceId }: { instanceId: string }) {
+  const isCompact = useIsCompact();
   const windowData = useWindowStore((s) => s.windows[instanceId]?.data);
   const initialPath = isFinderInitData(windowData) ? windowData.initialPath : undefined;
 
@@ -108,25 +173,10 @@ export function Finder({ instanceId }: { instanceId: string }) {
         {(titleBarRef) => (
           <TooltipProvider delayDuration={300}>
             <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
-              <div
-                ref={titleBarRef}
-                className="flex items-center h-12 border-b border-white/[0.06] select-none shrink-0 cursor-grab active:cursor-grabbing"
-              >
-                {/* Sidebar header: traffic lights */}
-                <div className="w-[180px] shrink-0 flex items-center px-3 bg-white/[0.04] h-full border-r border-white/[0.06]">
-                  <WindowControls target={instanceId} />
-                </div>
-                {/* Content header: nav buttons + breadcrumbs centered */}
-                <div className="flex-1 flex items-center bg-white/[0.06] h-full px-3 gap-2">
-                  <FinderNavButtons />
-                  <div className="flex-1 flex items-center">
-                    <FinderBreadcrumbs />
-                  </div>
-                </div>
-              </div>
+              <FinderTitleBar instanceId={instanceId} titleBarRef={titleBarRef} />
 
               <div className="flex flex-1 min-h-0">
-                <FinderSidebar />
+                {!isCompact && <FinderSidebar />}
                 <FinderContent />
               </div>
             </WindowShell>
