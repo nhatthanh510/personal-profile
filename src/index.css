@@ -28,6 +28,15 @@ body {
   --breakpoint-3xl: 1920px;
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
 @utility flex-center {
   @apply flex items-center justify-center;
 }
