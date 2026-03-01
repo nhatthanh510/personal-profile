@@ -13,7 +13,7 @@ export const Navbar = () => {
     <nav>
       <div>
         <img src={"/images/logo.svg"} alt="logo" className="invert" />
-        <p className="font-bold text-white">Nathan's Portfolio</p>
+        <p className="font-bold text-white">Nathan</p>
        
        <ul>
         {navLinks.map(({id, name}) => (

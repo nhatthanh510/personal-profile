@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { Draggable } from "gsap/Draggable";
 import useWindowStore from "@/store/window";
 import { DESKTOP_ITEMS, type DesktopAction, type DesktopItem } from "./desktopData";
 import { cn } from "@/lib/utils";
@@ -15,19 +16,53 @@ function DesktopIcon({
   onSelect: (id: string) => void;
   onAction: (action: DesktopAction) => void;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const dragged = useRef(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const [draggable] = Draggable.create(el, {
+      type: "x,y",
+      cursor: "default",
+      activeCursor: "default",
+      bounds: el.parentElement!,
+      onDragStart() {
+        dragged.current = false;
+      },
+      onDrag() {
+        dragged.current = true;
+      },
+      onDragEnd() {
+        // Reset after a short delay so the click/dblclick from this
+        // pointer-up is still suppressed, but future ones work
+        setTimeout(() => { dragged.current = false; }, 50);
+      },
+    });
+
+    return () => { draggable.kill(); };
+  }, []);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dragged.current) return;
+    onSelect(item.id);
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dragged.current) return;
+    onAction(item.action);
+  };
+
   return (
-    <button
-      type="button"
-      className="absolute flex flex-col items-center gap-1 w-[76px] pointer-events-auto select-none desktop-icon"
+    <div
+      ref={ref}
+      className="absolute flex flex-col items-center gap-1 w-[76px] pointer-events-auto select-none desktop-icon cursor-default"
       style={{ left: `${item.x}%`, top: `${item.y}%` }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        onAction(item.action);
-      }}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
       <div
         className={cn(
@@ -52,7 +87,7 @@ function DesktopIcon({
       >
         {item.name}
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -63,7 +98,7 @@ export function Desktop() {
   const openNewFinder = useWindowStore((s) => s.openNewFinder);
 
   // GSAP staggered fade-in on mount
-  useEffect(() => {
+  useLayoutEffect(() => {
     const icons = containerRef.current?.querySelectorAll(".desktop-icon");
     if (!icons?.length) return;
 
