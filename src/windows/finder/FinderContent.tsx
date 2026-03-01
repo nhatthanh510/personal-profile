@@ -3,14 +3,16 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import useFinderStore from "@/store/finder";
+import { useFinderInstance } from "@/store/finderContext";
+import { useIsCompact } from "@/hooks/use-mobile";
 
 export function FinderContent() {
-  const currentItems = useFinderStore((s) => s.currentItems);
-  const selectedItem = useFinderStore((s) => s.selectedItem);
-  const select = useFinderStore((s) => s.select);
-  const open = useFinderStore((s) => s.open);
+  const currentItems = useFinderInstance((s) => s.currentItems);
+  const selectedItem = useFinderInstance((s) => s.selectedItem);
+  const select = useFinderInstance((s) => s.select);
+  const open = useFinderInstance((s) => s.open);
   const gridRef = useRef<HTMLDivElement>(null);
+  const isCompact = useIsCompact();
 
   useGSAP(
     () => {
@@ -37,7 +39,7 @@ export function FinderContent() {
 
   if (currentItems.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-[13px] text-[#999]">
+      <div className="flex-1 flex items-center justify-center text-[13px] text-white/40">
         This folder is empty
       </div>
     );
@@ -63,11 +65,11 @@ export function FinderContent() {
                 "finder-grid-item flex flex-col items-center gap-1 p-2 rounded-lg",
                 "cursor-default transition-colors duration-100 opacity-0",
                 isSelected
-                  ? "bg-[#0058d0]/10 ring-1 ring-[#0058d0]/30"
-                  : "hover:bg-[#f0f0f0]"
+                  ? "bg-[#06b6d4]/15 ring-1 ring-[#06b6d4]/30"
+                  : "hover:bg-white/[0.06]"
               )}
-              onClick={() => select(item.id)}
-              onDoubleClick={() => open(item)}
+              onClick={() => isCompact ? open(item) : select(item.id)}
+              onDoubleClick={isCompact ? undefined : () => open(item)}
             >
               <img
                 src={item.icon}
@@ -78,7 +80,7 @@ export function FinderContent() {
               <span
                 className={cn(
                   "text-[11px] leading-tight text-center break-all line-clamp-2 px-0.5",
-                  isSelected ? "bg-[#0058d0] text-white rounded-sm px-1" : "text-[#333]"
+                  isSelected ? "bg-[#06b6d4] text-white rounded-sm px-1" : "text-white/80"
                 )}
               >
                 {item.name}

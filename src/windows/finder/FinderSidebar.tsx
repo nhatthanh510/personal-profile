@@ -1,20 +1,20 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import useFinderStore from "@/store/finder";
+import { useFinderInstance } from "@/store/finderContext";
 
 export function FinderSidebar() {
-  const sidebarSections = useFinderStore((s) => s.sidebarSections);
-  const currentPath = useFinderStore((s) => s.currentPath);
-  const sidebarNavigate = useFinderStore((s) => s.sidebarNavigate);
+  const sidebarSections = useFinderInstance((s) => s.sidebarSections);
+  const currentPath = useFinderInstance((s) => s.currentPath);
+  const sidebarNavigate = useFinderInstance((s) => s.sidebarNavigate);
   const activeId = currentPath[0] ?? null;
 
   return (
-    <div className="w-[180px] shrink-0 bg-[#f5f5f5]/80 backdrop-blur-sm border-r border-[#d1d1d1]">
+    <div className="w-[180px] shrink-0 bg-white/[0.04] border-r border-white/[0.06]">
       <ScrollArea className="h-full">
         <div className="py-3 px-2">
           {sidebarSections.map((section) => (
             <div key={section.label}>
-              <h3 className="px-2 mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8a8a8a]">
+              <h3 className="px-2 mb-1 text-[10px] font-semibold uppercase tracking-wider text-white/35">
                 {section.label}
               </h3>
               <ul className="space-y-0.5">
@@ -30,8 +30,8 @@ export function FinderSidebar() {
                           "w-full flex items-center gap-2 px-2 py-1 rounded-md text-left",
                           "text-[13px] transition-colors duration-100",
                           isActive
-                            ? "bg-[#0058d0] text-white"
-                            : "text-[#333] hover:bg-[#e0e0e0]"
+                            ? "bg-[#06b6d4]/20 text-[#22d3ee]"
+                            : "text-white/70 hover:bg-white/[0.08]"
                         )}
                       >
                         <img

@@ -1,24 +1,26 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import WindowWrapper from "@/hoc/WindowWrapper";
-import type { WindowWrapperProps } from "@/hoc/WindowWrapper";
+import { DynamicWindowWrapper } from "@/hoc/DynamicWindowWrapper";
 import { WindowControls } from "@/components/WindowControls";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import useWindowStore from "@/store/window";
+import { useIsCompact } from "@/hooks/use-mobile";
+import type { FinderInitData } from "@/constants";
 
-import useFinderStore from "@/store/finder";
+import { FinderStoreProvider, useFinderInstance } from "@/store/finderContext";
 import { FinderSidebar } from "./finder/FinderSidebar";
 import { FinderContent } from "./finder/FinderContent";
 
 // ── Back / Forward buttons (macOS pill style) ────────────────────
 function FinderNavButtons() {
-  const goBack = useFinderStore((s) => s.goBack);
-  const goForward = useFinderStore((s) => s.goForward);
-  const canGoBack = useFinderStore((s) => s.canGoBack);
-  const canGoForward = useFinderStore((s) => s.canGoForward);
+  const goBack = useFinderInstance((s) => s.goBack);
+  const goForward = useFinderInstance((s) => s.goForward);
+  const canGoBack = useFinderInstance((s) => s.canGoBack);
+  const canGoForward = useFinderInstance((s) => s.canGoForward);
 
   return (
-    <div className="flex items-center bg-white rounded-2xl shadow-[0_0.5px_2px_rgba(0,0,0,0.08)] shrink-0">
+    <div className="flex items-center bg-white/[0.08] rounded-2xl shrink-0">
       <button
         type="button"
         onClick={goBack}
@@ -29,14 +31,14 @@ function FinderNavButtons() {
           className={cn(
             "flex items-center justify-center size-6 rounded-full transition-colors",
             canGoBack
-              ? "text-[#444] hover:bg-[#d8d8d8]/70 active:bg-[#ccc]/70"
-              : "text-[#c0c0c0] cursor-default"
+              ? "text-white/80 hover:bg-white/[0.1] active:bg-white/[0.15]"
+              : "text-white/25 cursor-default"
           )}
         >
           <ChevronLeft className="size-5" strokeWidth={2.5} />
         </span>
       </button>
-      <div className="w-px h-5 bg-[#ddd]" />
+      <div className="w-px h-5 bg-white/[0.1]" />
       <button
         type="button"
         onClick={goForward}
@@ -47,8 +49,8 @@ function FinderNavButtons() {
           className={cn(
             "flex items-center justify-center size-6 rounded-full transition-colors",
             canGoForward
-              ? "text-[#444] hover:bg-[#d8d8d8]/70 active:bg-[#ccc]/70"
-              : "text-[#c0c0c0] cursor-default"
+              ? "text-white/80 hover:bg-white/[0.1] active:bg-white/[0.15]"
+              : "text-white/25 cursor-default"
           )}
         >
           <ChevronRight className="size-5" strokeWidth={3} />
@@ -60,8 +62,8 @@ function FinderNavButtons() {
 
 // ── Breadcrumb nav ───────────────────────────────────────────────
 function FinderBreadcrumbs() {
-  const breadcrumbs = useFinderStore((s) => s.breadcrumbs);
-  const breadcrumbNavigate = useFinderStore((s) => s.breadcrumbNavigate);
+  const breadcrumbs = useFinderInstance((s) => s.breadcrumbs);
+  const breadcrumbNavigate = useFinderInstance((s) => s.breadcrumbNavigate);
 
   return (
     <nav className="flex items-center gap-0.5 text-[14px]">
@@ -70,7 +72,7 @@ function FinderBreadcrumbs() {
         return (
           <div key={crumb.pathIndex} className="flex items-center gap-0.5">
             {i > 0 && (
-              <ChevronRight className="size-3.5 text-[#999] shrink-0" />
+              <ChevronRight className="size-3.5 text-white/30 shrink-0" />
             )}
             <button
               type="button"
@@ -78,8 +80,8 @@ function FinderBreadcrumbs() {
               className={cn(
                 "px-1 py-0.5 rounded transition-colors",
                 isLast
-                  ? "font-semibold text-[#333] cursor-default"
-                  : "text-[#666] hover:text-[#333] hover:bg-[#ddd]/60"
+                  ? "font-semibold text-white/90 cursor-default"
+                  : "text-white/50 hover:text-white/80 hover:bg-white/[0.08]"
               )}
               disabled={isLast}
             >
@@ -92,34 +94,95 @@ function FinderBreadcrumbs() {
   );
 }
 
+// ── Mobile title (current folder only) ────────────────────────────
+function FinderTitle() {
+  const breadcrumbs = useFinderInstance((s) => s.breadcrumbs);
+  const current = breadcrumbs[breadcrumbs.length - 1];
+
+  return (
+    <span className="text-[15px] font-semibold text-white/90 truncate">
+      {current?.label ?? "Finder"}
+    </span>
+  );
+}
+
 // ── Finder ───────────────────────────────────────────────────────
-const Finder = ({ titleBarRef }: WindowWrapperProps) => (
-  <TooltipProvider delayDuration={300}>
-    <WindowShell className="bg-white">
+function isFinderInitData(data: unknown): data is FinderInitData {
+  return !!data && typeof data === "object" && "initialPath" in data;
+}
+
+function FinderTitleBar({ instanceId, titleBarRef }: { instanceId: string; titleBarRef: React.RefObject<HTMLDivElement | null> }) {
+  const isCompact = useIsCompact();
+  const closeWindow = useWindowStore((s) => s.closeWindow);
+  const goBack = useFinderInstance((s) => s.goBack);
+  const canGoBack = useFinderInstance((s) => s.canGoBack);
+
+  const handleCompactBack = () => {
+    if (canGoBack) goBack();
+    else closeWindow(instanceId);
+  };
+
+  if (isCompact) {
+    return (
       <div
         ref={titleBarRef}
-        className="flex items-center h-12 border-b border-[#d1d1d1] select-none shrink-0 cursor-grab active:cursor-grabbing"
+        className="flex items-center h-12 bg-white/[0.06] border-b border-white/[0.06] px-3 select-none shrink-0"
       >
-        {/* Sidebar header: traffic lights */}
-        <div className="w-[180px] shrink-0 flex items-center px-3 bg-[#f5f5f5]/80 h-full border-r border-[#d1d1d1]">
-          <WindowControls target="finder" />
+        <button
+          type="button"
+          className="flex items-center gap-0.5 text-[#007AFF] text-sm font-normal shrink-0"
+          onClick={handleCompactBack}
+        >
+          <ChevronLeft className="size-5" strokeWidth={2.5} />
+          <span>{canGoBack ? "Back" : "Go Back"}</span>
+        </button>
+        <div className="flex-1 flex items-center justify-center">
+          <FinderTitle />
         </div>
-        {/* Content header: nav buttons + breadcrumbs centered */}
-        <div className="flex-1 flex items-center bg-[#e8e8e8] h-full px-3 gap-2">
-          <FinderNavButtons />
-          <div className="flex-1 flex items-center">
-            <FinderBreadcrumbs />
-          </div>
+        <div className="w-[72px]" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={titleBarRef}
+      className="flex items-center h-12 border-b border-white/[0.06] select-none shrink-0 cursor-grab active:cursor-grabbing"
+    >
+      <div className="w-[180px] shrink-0 flex items-center px-3 bg-white/[0.04] h-full border-r border-white/[0.06]">
+        <WindowControls target={instanceId} />
+      </div>
+      <div className="flex-1 flex items-center bg-white/[0.06] h-full px-3 gap-2">
+        <FinderNavButtons />
+        <div className="flex-1 flex items-center">
+          <FinderBreadcrumbs />
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="flex flex-1 min-h-0">
-        <FinderSidebar />
-        <FinderContent />
-      </div>
-    </WindowShell>
-  </TooltipProvider>
-);
+export function Finder({ instanceId }: { instanceId: string }) {
+  const isCompact = useIsCompact();
+  const windowData = useWindowStore((s) => s.windows[instanceId]?.data);
+  const initialPath = isFinderInitData(windowData) ? windowData.initialPath : undefined;
 
-const FinderWindow = WindowWrapper(Finder, "finder");
-export { FinderWindow };
+  return (
+    <FinderStoreProvider initialPath={initialPath} windowId={instanceId}>
+      <DynamicWindowWrapper windowId={instanceId} dockAppId="finder">
+        {(titleBarRef) => (
+          <TooltipProvider delayDuration={300}>
+            <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
+              <FinderTitleBar instanceId={instanceId} titleBarRef={titleBarRef} />
+
+              <div className="flex flex-1 min-h-0">
+                {!isCompact && <FinderSidebar />}
+                <FinderContent />
+              </div>
+            </WindowShell>
+          </TooltipProvider>
+        )}
+      </DynamicWindowWrapper>
+    </FinderStoreProvider>
+  );
+}

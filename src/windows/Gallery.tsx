@@ -64,11 +64,11 @@ function GalleryContent() {
 // ── Gallery ──────────────────────────────────────────────────────
 const Gallery = ({ titleBarRef }: WindowWrapperProps) => (
   <TooltipProvider delayDuration={300}>
-    <WindowShell className="bg-[#1e1e1e]">
+    <WindowShell className="bg-[rgba(18,20,30,0.85)] backdrop-blur-[20px]">
       <WindowTitleBar
         target="photos"
         titleBarRef={titleBarRef}
-        className="bg-[#2d2d2d] border-b-[#1a1a1a]"
+        className="bg-white/[0.06] border-b-white/[0.06]"
       >
         <GalleryTitleContent />
       </WindowTitleBar>

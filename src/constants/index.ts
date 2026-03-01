@@ -81,10 +81,18 @@ export interface FileViewerData {
   src: string;
 }
 
+export interface FinderInitData {
+  initialPath: string[];
+}
+
+export function isFileViewerData(data: WindowConfig['data']): data is FileViewerData {
+  return !!data && 'title' in data && 'src' in data;
+}
+
 export interface WindowConfig {
   isOpen: boolean;
   zIndex: number;
-  data: FileViewerData | null;
+  data: FileViewerData | FinderInitData | null;
   x: number | null;
   y: number | null;
   width: number;
@@ -122,12 +130,14 @@ function createWindowConfig(key: string): WindowConfig {
   };
 }
 
-export const WINDOW_KEYS = ['finder', 'contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
+export const WINDOW_KEYS = ['contact', 'resume', 'safari', 'photos', 'terminal', 'txtFile', 'imgFile', 'pdfFile'] as const;
 
 export type WindowKey = (typeof WINDOW_KEYS)[number];
 
-export type WindowsConfig = Record<WindowKey, WindowConfig>;
+export type WindowsConfig = Record<string, WindowConfig>;
 
 export const WINDOWS_CONFIG: WindowsConfig = Object.fromEntries(
   WINDOW_KEYS.map(k => [k, createWindowConfig(k)])
-) as WindowsConfig;
+);
+
+export { createWindowConfig };

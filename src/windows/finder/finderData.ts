@@ -215,6 +215,65 @@ export const finderTree: FinderItem[] = [
       },
     ],
   },
+  {
+    id: "personal",
+    name: "Personal",
+    type: "folder",
+    icon: ICONS.folder,
+    children: [
+      {
+        id: "personal-photos",
+        name: "Photos",
+        type: "folder",
+        icon: ICONS.folder,
+        children: [
+          {
+            id: "personal-photo-1",
+            name: "Vacation.png",
+            type: "image",
+            icon: ICONS.image,
+            imageSrc: "/images/gal1.png",
+          },
+          {
+            id: "personal-photo-2",
+            name: "Friends.png",
+            type: "image",
+            icon: ICONS.image,
+            imageSrc: "/images/gal2.png",
+          },
+        ],
+      },
+      {
+        id: "personal-notes",
+        name: "Notes",
+        type: "folder",
+        icon: ICONS.folder,
+        children: [
+          {
+            id: "personal-todo",
+            name: "Todo.txt",
+            type: "txt",
+            icon: ICONS.txt,
+            txtSrc: "/cover-letter.txt",
+          },
+          {
+            id: "personal-ideas",
+            name: "Ideas.txt",
+            type: "txt",
+            icon: ICONS.txt,
+            txtSrc: "/cover-letter.txt",
+          },
+        ],
+      },
+      {
+        id: "personal-journal",
+        name: "Journal-2024.txt",
+        type: "txt",
+        icon: ICONS.txt,
+        txtSrc: "/cover-letter.txt",
+      },
+    ],
+  },
 ];
 
 // ── Sidebar favorites (top-level folders) ────────────────────────
@@ -223,14 +282,17 @@ export interface SidebarSection {
   items: { id: string; name: string; icon: string }[];
 }
 
+// Only these top-level folder IDs appear in the sidebar
+const SIDEBAR_IDS = ["projects", "documents", "designs"];
+
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     label: "Favorites",
-    items: finderTree.map((item) => ({
-      id: item.id,
-      name: item.name,
-      icon: item.icon,
-    })),
+    items: SIDEBAR_IDS.reduce<SidebarSection["items"]>((acc, id) => {
+      const item = finderTree.find((i) => i.id === id);
+      if (item) acc.push({ id: item.id, name: item.name, icon: item.icon });
+      return acc;
+    }, []),
   },
 ];
 

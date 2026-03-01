@@ -1,1 +1,1 @@
-export { FinderWindow } from "../Finder";
+export { Finder } from "../Finder";

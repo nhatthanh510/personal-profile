@@ -44,9 +44,9 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="bg-[#f5f5f7]">
+      <WindowShell className="bg-[rgba(22,24,35,0.65)] backdrop-blur-[20px]">
         <WindowTitleBar target="contact" titleBarRef={titleBarRef}>
-          <span className="text-[13px] font-semibold text-[#333]">Contacts</span>
+          <span className="text-[13px] font-semibold text-white/90">Contacts</span>
         </WindowTitleBar>
 
         <ScrollArea className="flex-1">
@@ -56,18 +56,18 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
               <img
                 src="/images/adrian.jpg"
                 alt="Profile"
-                className="size-28 rounded-full object-cover border-2 border-white shadow-md"
+                className="size-28 rounded-full object-cover border-2 border-white/20 shadow-md"
               />
-              <h3 className="mt-3 text-[15px] font-semibold text-[#1d1d1f]">
+              <h3 className="mt-3 text-[15px] font-semibold text-white/90">
                 Nhat Thanh
               </h3>
-              <p className="text-[12px] text-[#86868b] text-center mt-0.5">
+              <p className="text-[12px] text-white/50 text-center mt-0.5">
                 Full-Stack Developer
               </p>
 
               <div className="flex items-center gap-1.5 mt-1.5">
-                <Mail className="size-3 text-[#86868b]" />
-                <span className="text-[11px] text-[#86868b]">hello@example.com</span>
+                <Mail className="size-3 text-white/40" />
+                <span className="text-[11px] text-white/50">hello@example.com</span>
               </div>
 
               <div className="flex gap-3 mt-4">
@@ -77,10 +77,10 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="size-8 rounded-full bg-white border border-[#d1d1d6] flex items-center justify-center hover:bg-[#e8e8ed] transition-colors shadow-sm"
+                    className="size-8 rounded-full bg-white/[0.08] border border-white/[0.1] flex items-center justify-center hover:bg-white/[0.15] transition-colors"
                     aria-label={s.name}
                   >
-                    <img src={s.icon} alt={s.name} className="size-4" />
+                    <img src={s.icon} alt={s.name} className="size-4 invert" />
                   </a>
                 ))}
               </div>
@@ -89,7 +89,7 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
             {/* ── Contact Form ──────────────────────────────── */}
             <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-3 min-w-0">
               <div className="flex flex-col gap-1">
-                <label htmlFor="contact-name" className="text-[12px] font-medium text-[#3c3c43]">
+                <label htmlFor="contact-name" className="text-[12px] font-medium text-white/60">
                   Name
                 </label>
                 <input
@@ -100,12 +100,12 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
                   onChange={handleChange}
                   placeholder="Your name"
                   required
-                  className="h-9 px-3 rounded-lg border border-[#d1d1d6] bg-white text-[13px] text-[#1d1d1f] placeholder:text-[#aeaeb2] outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all shadow-sm"
+                  className="h-9 px-3 rounded-lg border border-white/[0.1] bg-white/[0.06] text-[13px] text-white/90 placeholder:text-white/30 outline-none focus:border-[#06b6d4] focus:ring-2 focus:ring-[#06b6d4]/20 transition-all"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label htmlFor="contact-email" className="text-[12px] font-medium text-[#3c3c43]">
+                <label htmlFor="contact-email" className="text-[12px] font-medium text-white/60">
                   Email
                 </label>
                 <input
@@ -116,12 +116,12 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className="h-9 px-3 rounded-lg border border-[#d1d1d6] bg-white text-[13px] text-[#1d1d1f] placeholder:text-[#aeaeb2] outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all shadow-sm"
+                  className="h-9 px-3 rounded-lg border border-white/[0.1] bg-white/[0.06] text-[13px] text-white/90 placeholder:text-white/30 outline-none focus:border-[#06b6d4] focus:ring-2 focus:ring-[#06b6d4]/20 transition-all"
                 />
               </div>
 
               <div className="flex flex-col gap-1 flex-1">
-                <label htmlFor="contact-message" className="text-[12px] font-medium text-[#3c3c43]">
+                <label htmlFor="contact-message" className="text-[12px] font-medium text-white/60">
                   Message
                 </label>
                 <textarea
@@ -132,13 +132,13 @@ const Contact = ({ titleBarRef }: WindowWrapperProps) => {
                   placeholder="Write your message..."
                   required
                   rows={4}
-                  className="flex-1 min-h-[100px] px-3 py-2 rounded-lg border border-[#d1d1d6] bg-white text-[13px] text-[#1d1d1f] placeholder:text-[#aeaeb2] outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all shadow-sm resize-none"
+                  className="flex-1 min-h-[100px] px-3 py-2 rounded-lg border border-white/[0.1] bg-white/[0.06] text-[13px] text-white/90 placeholder:text-white/30 outline-none focus:border-[#06b6d4] focus:ring-2 focus:ring-[#06b6d4]/20 transition-all resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="h-9 px-4 rounded-lg bg-[#0071e3] text-white text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-[#0077ed] active:bg-[#006adb] transition-colors shadow-sm self-end"
+                className="h-9 px-4 rounded-lg bg-[#06b6d4] text-white text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-[#22d3ee] active:bg-[#0891b2] transition-colors self-end"
               >
                 {sent ? (
                   "Sent!"

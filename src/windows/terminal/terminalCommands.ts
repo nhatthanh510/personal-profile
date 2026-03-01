@@ -49,6 +49,18 @@ export const ASCII_WELCOME: string[] = [
   "",
 ];
 
+// ── Mobile: narrower ASCII (fits small screens) ────────────────────
+export const ASCII_WELCOME_MOBILE: string[] = [
+  "",
+  "  +----------------------------+",
+  "  |                            |",
+  "  |  Welcome to my portfolio   |",
+  "  |  Type 'help' for commands  |",
+  "  |                            |",
+  "  +----------------------------+",
+  "",
+];
+
 
 
 // ── Command processor ─────────────────────────────────────────────

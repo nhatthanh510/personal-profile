@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import dayjs from 'dayjs';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const FONT_WEIGHTS: Record<string, { min: number; max: number; default: number }> = {
   subtitle: {
@@ -68,6 +70,14 @@ const renderText = (text: string, className: string, baseWeight = 400) => {
 export const Welcome = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const isMobile = useIsMobile();
+  const [time, setTime] = useState(() => dayjs().format('HH:mm'));
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const id = setInterval(() => setTime(dayjs().format('HH:mm')), 1000);
+    return () => clearInterval(id);
+  }, [isMobile]);
 
   useGSAP(() => {
     const subtitleCleanup = setupTextHover(subtitleRef.current, 'subtitle');
@@ -80,12 +90,12 @@ export const Welcome = () => {
   }, []);
 
   return <section id="welcome">
-    <p className="text-white" ref={subtitleRef}>{renderText("Hey, I'm Nathan! Welcome to my", "text-3xl font-georama", 100)}</p>
-    <h1 className="text-white mt-7" ref={titleRef}>{renderText("portfolio", "text-9xl italic font-georama")}</h1>
- 
-    <div className="small-screen">
-      <p>this porfolio is designed for desktop/tablet only</p>
-    </div>
-
+    {isMobile && (
+      <time className="block text-white/90 text-5xl sm:text-6xl font-semibold tabular-nums mb-6" dateTime={`${dayjs().format('YYYY-MM-DD')}T${time}:00`}>
+        {time}
+      </time>
+    )}
+    <p className="text-white px-4 text-center" ref={subtitleRef}>{renderText("Hey, I'm Nathan! Welcome to my", "text-lg sm:text-2xl lg:text-3xl font-georama", 100)}</p>
+    <h1 className="text-white mt-3 sm:mt-7 max-lg:mt-2" ref={titleRef} style={{ textShadow: "0 0 40px rgba(6,182,212,0.3), 0 0 80px rgba(6,182,212,0.15)" }}>{renderText("portfolio", "text-5xl sm:text-7xl lg:text-9xl italic font-georama")}</h1>
   </section>
 }

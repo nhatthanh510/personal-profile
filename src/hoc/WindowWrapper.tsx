@@ -15,6 +15,8 @@ import {
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import type { WindowKey } from "@/constants";
+import { useIsCompact } from "@/hooks/use-mobile";
+
 export interface WindowWrapperProps {
   titleBarRef: RefObject<HTMLDivElement | null>;
 }
@@ -29,6 +31,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       }))
     );
     const { isOpen, zIndex, isMinimized, isMaximized, x, y, width, height } = win;
+    const isCompact = useIsCompact();
 
     const windowRef = useRef<HTMLDivElement>(null);
     const titleBarRef = useRef<HTMLDivElement>(null);
@@ -38,6 +41,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
 
     // ── Auto-center on first open ──────────────────────────
     useEffect(() => {
+      if (isCompact) return;
       if (isOpen && x === null && !isMinimized && !hasCentered.current) {
         hasCentered.current = true;
         const cx = (window.innerWidth - width) / 2;
@@ -47,7 +51,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       if (!isOpen) {
         hasCentered.current = false;
       }
-    }, [isOpen, x, width, height, isMinimized, updatePosition]);
+    }, [isOpen, x, width, height, isMinimized, updatePosition, isCompact]);
 
     // ── Open animation ─────────────────────────────────────
     useGSAP(() => {
@@ -55,18 +59,32 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       if (!el || !isOpen || isMinimized) return;
 
       el.style.display = "block";
-      gsap.fromTo(
-        el,
-        { scale: 0.9, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.3,
-          ease: "power3.out",
-          onComplete: () => { gsap.set(el, { clearProps: "transform,opacity" }); },
-        }
-      );
-    }, [isOpen]);
+
+      if (isCompact) {
+        gsap.fromTo(
+          el,
+          { y: "100%", opacity: 1 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            ease: "power3.out",
+          }
+        );
+      } else {
+        gsap.fromTo(
+          el,
+          { scale: 0.9, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3,
+            ease: "power3.out",
+            onComplete: () => { gsap.set(el, { clearProps: "transform,opacity" }); },
+          }
+        );
+      }
+    }, [isOpen, isCompact]);
 
     // ── Minimize / Unminimize animation ────────────────────
     useEffect(() => {
@@ -74,47 +92,71 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       if (!el) return;
 
       if (isMinimized && !prevIsMinimized.current) {
-        // Animate to dock
-        const dockIcon = document.querySelector<HTMLElement>(`[data-app="${windowKey}"]`);
-        const dockRect = dockIcon?.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
+        if (isCompact) {
+          gsap.to(el, {
+            y: "100%",
+            duration: 0.3,
+            ease: "power3.in",
+            onComplete: () => {
+              el.style.display = "none";
+              gsap.set(el, { clearProps: "transform,opacity,filter,borderRadius" });
+            },
+          });
+        } else {
+          const dockIcon = document.querySelector<HTMLElement>(`[data-app="${windowKey}"]`);
+          const dockRect = dockIcon?.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
 
-        const targetX = dockRect ? dockRect.left - elRect.left + dockRect.width / 2 : 0;
-        const targetY = dockRect ? dockRect.top - elRect.top : window.innerHeight;
+          const targetX = dockRect ? dockRect.left - elRect.left + dockRect.width / 2 : 0;
+          const targetY = dockRect ? dockRect.top - elRect.top : window.innerHeight;
 
-        gsap.to(el, {
-          scale: 0.05,
-          opacity: 0,
-          x: targetX,
-          y: targetY,
-          duration: 0.4,
-          ease: "power3.in",
-          onComplete: () => {
-            el.style.display = "none";
-            gsap.set(el, { clearProps: "transform,opacity" });
-          },
-        });
+          gsap.to(el, {
+            scale: 0.05,
+            opacity: 0,
+            x: targetX,
+            y: targetY,
+            duration: 0.4,
+            ease: "power3.in",
+            onComplete: () => {
+              el.style.display = "none";
+              gsap.set(el, { clearProps: "transform,opacity" });
+            },
+          });
+        }
       } else if (!isMinimized && prevIsMinimized.current) {
-        // Restore from dock
         el.style.display = "block";
-        gsap.fromTo(
-          el,
-          { scale: 0.05, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.35,
-            ease: "power3.out",
-            onComplete: () => { gsap.set(el, { clearProps: "transform,opacity" }); },
-          }
-        );
+        if (isCompact) {
+          gsap.fromTo(
+            el,
+            { y: "100%", opacity: 1 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.35,
+              ease: "power3.out",
+            }
+          );
+        } else {
+          gsap.fromTo(
+            el,
+            { scale: 0.05, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 1,
+              duration: 0.35,
+              ease: "power3.out",
+              onComplete: () => { gsap.set(el, { clearProps: "transform,opacity" }); },
+            }
+          );
+        }
       }
 
       prevIsMinimized.current = isMinimized;
-    }, [isMinimized]);
+    }, [isMinimized, isCompact]);
 
-    // ── Maximize / Restore animation ───────────────────────
+    // ── Maximize / Restore animation (desktop only) ─────────
     useEffect(() => {
+      if (isCompact) return;
       const el = windowRef.current;
       if (!el || !isOpen) return;
 
@@ -129,7 +171,6 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
           overwrite: true,
         });
       } else if (!isMaximized && prevIsMaximized.current && win.prevGeometry === null) {
-        // Restored — animate to stored position
         gsap.to(el, {
           left: x ?? (window.innerWidth - width) / 2,
           top: y ?? (window.innerHeight - height) / 2,
@@ -142,7 +183,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       }
 
       prevIsMaximized.current = isMaximized;
-    }, [isMaximized, isOpen, x, y, width, height, win.prevGeometry]);
+    }, [isMaximized, isOpen, x, y, width, height, win.prevGeometry, isCompact]);
 
     // ── Visibility ─────────────────────────────────────────
     useLayoutEffect(() => {
@@ -153,9 +194,9 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       }
     }, [isOpen]);
 
-    // Draggable (GSAP Draggable on title bar)
-    // Re-run when isOpen changes so the trigger ref is available after first render
+    // Draggable (desktop only)
     useLayoutEffect(() => {
+      if (isCompact) return;
       const el = windowRef.current;
       const trigger = titleBarRef.current;
 
@@ -167,8 +208,6 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
           focusWindow(windowKey);
         },
         onDragEnd() {
-          // Sync final position to store and clear transform so
-          // left/top remain the single source of truth
           const rect = el.getBoundingClientRect();
           gsap.set(el, { clearProps: "transform" });
           gsap.set(el, { left: rect.left, top: rect.top });
@@ -179,10 +218,22 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
       return () => {
         draggable.kill();
       };
-    }, [isOpen, focusWindow, updatePosition]);
+    }, [isOpen, focusWindow, updatePosition, isCompact]);
 
     // ── Compute inline style ───────────────────────────────
     const style: CSSProperties = useMemo(() => {
+      if (isCompact) {
+        return {
+          zIndex,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100dvw",
+          height: "100dvh",
+          transformOrigin: "top center",
+          overflow: "hidden",
+        };
+      }
       if (isMaximized) {
         return {
           zIndex,
@@ -201,7 +252,7 @@ const WindowWrapper = (Component: ComponentType<WindowWrapperProps>, windowKey: 
         width,
         height,
       };
-    }, [isMaximized, zIndex, x, y, width, height]);
+    }, [isCompact, isMaximized, zIndex, x, y, width, height]);
 
     const handleMouseDown = useCallback(() => {
       focusWindow(windowKey);

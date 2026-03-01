@@ -1,5 +1,6 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 import useWindowStore from "@/store/window";
+import useLocationStore from "@/store/location";
 import {
   finderTree,
   findItemById,
@@ -20,7 +21,7 @@ function buildBreadcrumbs(path: string[]) {
   return crumbs;
 }
 
-interface FinderState {
+export interface FinderState {
   currentPath: string[];
   selectedItem: string | null;
   currentItems: FinderItem[];
@@ -53,75 +54,89 @@ function navigateTo(s: FinderState, newPath: string[]) {
   };
 }
 
-const useFinderStore = create<FinderState>((set) => ({
-  currentPath: [],
-  selectedItem: null,
-  currentItems: getItemsAtPath([]),
-  breadcrumbs: buildBreadcrumbs([]),
-  sidebarSections: SIDEBAR_SECTIONS,
-  history: [[]],
-  historyIndex: 0,
-  canGoBack: false,
-  canGoForward: false,
+export function createFinderStore(windowId: string, initialPath?: string[]) {
+  const startPath = initialPath ?? [];
 
-  sidebarNavigate: (folderId) =>
-    set((s) => navigateTo(s, [folderId])),
+  // Register initial path in location store
+  useLocationStore.getState().setPath(windowId, startPath);
 
-  breadcrumbNavigate: (index) =>
-    set((s) => {
-      const newPath = index < 0 ? [] : s.currentPath.slice(0, index + 1);
-      return navigateTo(s, newPath);
-    }),
+  const store = createStore<FinderState>((set) => ({
+    currentPath: startPath,
+    selectedItem: null,
+    currentItems: getItemsAtPath(startPath),
+    breadcrumbs: buildBreadcrumbs(startPath),
+    sidebarSections: SIDEBAR_SECTIONS,
+    history: [startPath],
+    historyIndex: 0,
+    canGoBack: false,
+    canGoForward: false,
 
-  select: (id) => set({ selectedItem: id }),
+    sidebarNavigate: (folderId) =>
+      set((s) => navigateTo(s, [folderId])),
 
-  open: (item) => {
-    if (item.type === "folder") {
-      set((s) => navigateTo(s, [...s.currentPath, item.id]));
-      return;
+    breadcrumbNavigate: (index) =>
+      set((s) => {
+        const newPath = index < 0 ? [] : s.currentPath.slice(0, index + 1);
+        return navigateTo(s, newPath);
+      }),
+
+    select: (id) => set({ selectedItem: id }),
+
+    open: (item) => {
+      if (item.type === "folder") {
+        set((s) => navigateTo(s, [...s.currentPath, item.id]));
+        return;
+      }
+
+      const { openWindow } = useWindowStore.getState();
+      if (item.type === "txt" && item.txtSrc) {
+        openWindow("txtFile", { title: item.name, src: item.txtSrc });
+      } else if (item.type === "image" && item.imageSrc) {
+        openWindow("imgFile", { title: item.name, src: item.imageSrc });
+      } else if (item.type === "pdf" && item.pdfSrc) {
+        openWindow("pdfFile", { title: item.name, src: item.pdfSrc });
+      }
+    },
+
+    goBack: () =>
+      set((s) => {
+        if (s.historyIndex <= 0) return s;
+        const newIndex = s.historyIndex - 1;
+        const newPath = s.history[newIndex];
+        return {
+          currentPath: newPath,
+          selectedItem: null,
+          currentItems: getItemsAtPath(newPath),
+          breadcrumbs: buildBreadcrumbs(newPath),
+          historyIndex: newIndex,
+          canGoBack: newIndex > 0,
+          canGoForward: true,
+        };
+      }),
+
+    goForward: () =>
+      set((s) => {
+        if (s.historyIndex >= s.history.length - 1) return s;
+        const newIndex = s.historyIndex + 1;
+        const newPath = s.history[newIndex];
+        return {
+          currentPath: newPath,
+          selectedItem: null,
+          currentItems: getItemsAtPath(newPath),
+          breadcrumbs: buildBreadcrumbs(newPath),
+          historyIndex: newIndex,
+          canGoBack: true,
+          canGoForward: newIndex < s.history.length - 1,
+        };
+      }),
+  }));
+
+  // Auto-sync path changes to location store
+  store.subscribe((state, prev) => {
+    if (state.currentPath !== prev.currentPath) {
+      useLocationStore.getState().setPath(windowId, state.currentPath);
     }
+  });
 
-    const { openWindow } = useWindowStore.getState();
-    if (item.type === "txt" && item.txtSrc) {
-      openWindow("txtFile", { title: item.name, src: item.txtSrc });
-    } else if (item.type === "image" && item.imageSrc) {
-      openWindow("imgFile", { title: item.name, src: item.imageSrc });
-    } else if (item.type === "pdf" && item.pdfSrc) {
-      openWindow("pdfFile", { title: item.name, src: item.pdfSrc });
-    }
-  },
-
-  goBack: () =>
-    set((s) => {
-      if (s.historyIndex <= 0) return s;
-      const newIndex = s.historyIndex - 1;
-      const newPath = s.history[newIndex];
-      return {
-        currentPath: newPath,
-        selectedItem: null,
-        currentItems: getItemsAtPath(newPath),
-        breadcrumbs: buildBreadcrumbs(newPath),
-        historyIndex: newIndex,
-        canGoBack: newIndex > 0,
-        canGoForward: true,
-      };
-    }),
-
-  goForward: () =>
-    set((s) => {
-      if (s.historyIndex >= s.history.length - 1) return s;
-      const newIndex = s.historyIndex + 1;
-      const newPath = s.history[newIndex];
-      return {
-        currentPath: newPath,
-        selectedItem: null,
-        currentItems: getItemsAtPath(newPath),
-        breadcrumbs: buildBreadcrumbs(newPath),
-        historyIndex: newIndex,
-        canGoBack: true,
-        canGoForward: newIndex < s.history.length - 1,
-      };
-    }),
-}));
-
-export default useFinderStore;
+  return store;
+}

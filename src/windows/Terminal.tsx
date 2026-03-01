@@ -4,25 +4,30 @@ import { WindowTitleBar } from "@/components/WindowTitleBar";
 import { WindowShell } from "@/components/WindowShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState, useRef, useEffect, useCallback, type KeyboardEvent } from "react";
-import { processCommand, ASCII_WELCOME, type TerminalLine } from "./terminal/terminalCommands";
+import { useState, useRef, useEffect, useCallback, useMemo, type KeyboardEvent } from "react";
+import { processCommand, ASCII_WELCOME, ASCII_WELCOME_MOBILE, type TerminalLine } from "./terminal/terminalCommands";
 import { PromptPrefix } from "./terminal/PromptPrefix";
 
 // ── Terminal Component ────────────────────────────────────────────
+const getInitialWelcomeLines = (): TerminalLine[] => {
+  let id = 0;
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 639;
+  const welcome = isMobile ? ASCII_WELCOME_MOBILE : ASCII_WELCOME;
+  return welcome.map((content) => ({
+    id: id++,
+    type: "ascii" as const,
+    content,
+  }));
+};
+
 const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
-  const [lines, setLines] = useState<TerminalLine[]>(() => {
-    let id = 0;
-    return ASCII_WELCOME.map((content) => ({
-      id: id++,
-      type: "ascii" as const,
-      content,
-    }));
-  });
+  const initialLines = useMemo(() => getInitialWelcomeLines(), []);
+  const [lines, setLines] = useState<TerminalLine[]>(initialLines);
   const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const nextId = useRef(ASCII_WELCOME.length);
+  const nextId = useRef(initialLines.length);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -101,27 +106,28 @@ const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <WindowShell className="shadow-black/50 border-white/8 bg-[#1e1e1e]">
+      <WindowShell className="bg-[rgba(18,20,30,0.85)] backdrop-blur-[20px]">
         <WindowTitleBar
           target="terminal"
           titleBarRef={titleBarRef}
-          className="bg-[#2d2d2d] border-b-[#1a1a1a] h-9"
+          className="bg-white/[0.06] border-b-white/[0.06] h-9"
         >
           <div className="flex items-center gap-1.5 bg-[#1e1e1e] rounded-md px-3 py-0.5">
             <div className="size-2.5 rounded-sm bg-[#555]" />
             <span className="text-[12px] text-[#a0a0a0] font-medium tracking-wide">
-              visitor — zsh — 80×24
+              ~zsh
             </span>
           </div>
         </WindowTitleBar>
 
         <ScrollArea
           ref={scrollRef}
-          className="flex-1 overflow-hidden bg-[#1e1e1e]/95 backdrop-blur-xl"
+          className="flex-1 overflow-hidden bg-transparent"
         >
-          <div onClick={() => inputRef.current?.focus()} className="p-3 font-roboto text-[13px] leading-normal cursor-text min-h-full">
+          <div onClick={() => inputRef.current?.focus()} className="p-3 font-roboto text-[13px] leading-normal cursor-text min-h-full overflow-x-auto">
+            <div className="min-w-max">
             {lines.map((line) => (
-              <div key={line.id} className="whitespace-pre-wrap break-all">
+              <div key={line.id} className="whitespace-pre">
                 {line.type === "input" ? (
                   <span>
                     <PromptPrefix />
@@ -141,12 +147,13 @@ const Terminal = ({ titleBarRef }: WindowWrapperProps) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent text-[#e6e6e6] outline-none border-none caret-[#f8f8f2] font-roboto text-[13px] leading-normal"
+                className="flex-1 min-w-[8rem] bg-transparent text-[#e6e6e6] outline-none border-none caret-[#f8f8f2] font-roboto text-[13px] leading-normal"
                 spellCheck={false}
                 autoComplete="off"
                 autoFocus
                 aria-label="Terminal input"
               />
+            </div>
             </div>
           </div>
         </ScrollArea>
