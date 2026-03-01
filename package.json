@@ -10,7 +10,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "node scripts/generate-gallery-images.js",
     "build": "tsc -b && vite build",
+    "prebuild": "node scripts/generate-gallery-images.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

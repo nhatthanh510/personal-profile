@@ -1,11 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 import { navLinks, navIcons } from '@/constants';
 import { useIsMobile, useIsCompact } from '@/hooks/use-mobile';
+import useWindowStore from '@/store/window';
 
 export const Navbar = () => {
   const isMobile = useIsMobile();
   const isCompact = useIsCompact();
+  const openWindow = useWindowStore((s) => s.openWindow);
+  const openNewFinder = useWindowStore((s) => s.openNewFinder);
+
+  const handleNavClick = useCallback(
+    (action: (typeof navLinks)[number]['action']) => {
+      if (action === 'finder') openNewFinder();
+      else if (action === 'contact') openWindow('contact');
+      else if (action === 'resume') openWindow('pdfFile', { title: 'Resume.pdf', src: '/resume.pdf' });
+    },
+    [openWindow, openNewFinder]
+  );
+
   const [date, setDate] = useState(() => dayjs().format('ddd D MMM'));
   const [dateIso, setDateIso] = useState(() => dayjs().format('YYYY-MM-DD'));
   const [time, setTime] = useState(() =>
@@ -69,9 +82,19 @@ export const Navbar = () => {
                 <p className="font-bold text-white">Nathan</p>
 
                 <ul>
-                  {navLinks.map(({ id, name }) => (
+                  {navLinks.map(({ id, name, action }) => (
                     <li key={id}>
-                      <p>{name}</p>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleNavClick(action);
+                        }}
+                        className="text-sm text-white/80 cursor-pointer hover:underline transition-all bg-transparent border-none p-0 font-inherit"
+                      >
+                        {name}
+                      </button>
                     </li>
                   ))}
                 </ul>

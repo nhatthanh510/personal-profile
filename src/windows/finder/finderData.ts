@@ -3,7 +3,7 @@
 export interface FinderItem {
   id: string;
   name: string;
-  type: "folder" | "txt" | "pdf" | "image" | "figma";
+  type: "folder" | "txt" | "pdf" | "image";
   icon: string;
   txtSrc?: string;
   imageSrc?: string;
@@ -17,7 +17,6 @@ const ICONS: Record<FinderItem["type"], string> = {
   txt: "/images/txt.png",
   pdf: "/images/pdf.png",
   image: "/images/image.png",
-  figma: "/images/figma.png",
 };
 
 // ── File tree ────────────────────────────────────────────────────
@@ -73,24 +72,31 @@ export const finderTree: FinderItem[] = [
         ],
       },
       {
-        id: "project-chat",
-        name: "Chat Platform",
+        id: "project-content-creation",
+        name: "Content creation platform",
         type: "folder",
         icon: ICONS.folder,
         children: [
           {
-            id: "project-3-screenshot",
-            name: "Screenshot.png",
+            id: "joinbrands-landing-page",
+            name: "LandingPage.png",
             type: "image",
-            icon: ICONS.image,
-            imageSrc: "/images/project-3.png",
+            icon: '/companies/joinbrands/landing-page.png',
+            imageSrc: "/companies/joinbrands/landing-page.png",
           },
           {
-            id: "project-3-readme",
-            name: "README.txt",
+            id: "joinbrands-campaign-page",
+            name: "CampaignPage.png",
+            type: "image",
+            icon: '/companies/joinbrands/new-campaign.png',
+            imageSrc: "/companies/joinbrands/new-campaign.png",
+          },
+          {
+            id: "joinbrands-readme",
+            name: "Instructions.txt",
             type: "txt",
             icon: ICONS.txt,
-            txtSrc: "/texts/chat-platform-readme.txt",
+            txtSrc: "/texts/joinbrands-platform-readme.txt",
           },
         ],
       },
@@ -198,20 +204,6 @@ export const finderTree: FinderItem[] = [
         type: "txt",
         icon: ICONS.txt,
         txtSrc: "/cover-letter.txt",
-      },
-    ],
-  },
-  {
-    id: "designs",
-    name: "Designs",
-    type: "folder",
-    icon: ICONS.folder,
-    children: [
-      {
-        id: "portfolio-fig",
-        name: "Portfolio.fig",
-        type: "figma",
-        icon: ICONS.figma,
       },
     ],
   },

@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import { galleryImages, type GalleryImage } from "@/windows/gallery/galleryData";
+import { galleryImages, galleryGroups, type GalleryImage } from "@/windows/gallery/galleryData";
 
 interface GalleryState {
   selectedIndex: number | null;
   images: GalleryImage[];
+  groups: typeof galleryGroups;
   selectedImage: GalleryImage | null;
   select: (index: number) => void;
   close: () => void;
@@ -14,6 +15,7 @@ interface GalleryState {
 const useGalleryStore = create<GalleryState>((set) => ({
   selectedIndex: null,
   images: galleryImages,
+  groups: galleryGroups,
   selectedImage: null,
 
   select: (index) =>

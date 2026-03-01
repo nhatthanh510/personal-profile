@@ -4,9 +4,42 @@ export interface GalleryImage {
   title: string;
 }
 
-export const galleryImages: GalleryImage[] = [
-  { id: "gal-1", src: "/images/gal1.png", title: "Gallery 1" },
-  { id: "gal-2", src: "/images/gal2.png", title: "Gallery 2" },
-  { id: "gal-3", src: "/images/gal3.png", title: "Gallery 3" },
-  { id: "gal-4", src: "/images/gal4.png", title: "Gallery 4" },
+export interface GalleryCompanyGroup {
+  company: string;
+  title: string;
+  images: GalleryImage[];
+}
+
+// Auto-generated from public/companies – run: node scripts/generate-gallery-images.js
+const companiesGroups: GalleryCompanyGroup[] = [
+  {
+    company: "joinbrands",
+    title: "Joinbrands",
+    images: [
+      {
+        id: "companies-0--companies-joinbrands-landing-page.png",
+        src: "/companies/joinbrands/landing-page.png",
+        title: "Landing Page"
+      },
+      {
+        id: "companies-1--companies-joinbrands-new-campaign.png",
+        src: "/companies/joinbrands/new-campaign.png",
+        title: "New Campaign"
+      }
+    ]
+  },
+  {
+    company: "nab",
+    title: "Nab",
+    images: [
+      {
+        id: "companies-2--companies-nab-landing-page.png",
+        src: "/companies/nab/landing-page.png",
+        title: "Landing Page"
+      }
+    ]
+  }
 ];
+
+export const galleryGroups = companiesGroups;
+export const galleryImages: GalleryImage[] = companiesGroups.flatMap((g) => g.images);

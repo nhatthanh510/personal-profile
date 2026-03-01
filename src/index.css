@@ -56,7 +56,7 @@ body {
   }
 
   nav {
-    @apply flex justify-between items-center bg-transparent p-2 px-3 sm:px-5 select-none;
+    @apply relative z-20 flex justify-between items-center bg-transparent p-2 px-3 sm:px-5 select-none;
 
     div {
       @apply flex items-center gap-3 sm:gap-5;

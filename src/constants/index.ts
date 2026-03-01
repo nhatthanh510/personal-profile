@@ -1,7 +1,7 @@
 export const navLinks = [
-  { id: 1, name: 'Projects' },
-  { id: 2, name: 'Contact' },
-  { id: 3, name: 'Resume' },
+  { id: 1, name: 'Projects', action: 'finder' as const },
+  { id: 2, name: 'Contact', action: 'contact' as const },
+  { id: 3, name: 'Resume', action: 'resume' as const },
 ];
 
 export const navIcons = [
@@ -106,7 +106,7 @@ export const WINDOW_DEFAULTS: Record<string, { width: number; height: number }> 
   finder:   { width: 800, height: 500 },
   safari:   { width: 900, height: 560 },
   photos:   { width: 860, height: 540 },
-  contact:  { width: 700, height: 480 },
+  contact:  { width: 700, height: 350 },
   terminal: { width: 680, height: 460 },
   resume:   { width: 640, height: 500 },
   txtFile:  { width: 600, height: 400 },

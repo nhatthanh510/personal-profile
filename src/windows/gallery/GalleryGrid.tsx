@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import useGalleryStore from "@/store/gallery";
 
 export function GalleryGrid() {
-  const images = useGalleryStore((s) => s.images);
+  const groups = useGalleryStore((s) => s.groups);
   const selectedIndex = useGalleryStore((s) => s.selectedIndex);
   const select = useGalleryStore((s) => s.select);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -33,36 +33,50 @@ export function GalleryGrid() {
     { scope: gridRef, dependencies: [selectedIndex] }
   );
 
+  let globalIndex = 0;
+
   return (
     <ScrollArea className="flex-1 bg-transparent">
-      <div
-        ref={gridRef}
-        className="grid gap-2 p-4"
-        style={{
-          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-        }}
-      >
-        {images.map((img, index) => (
-          <button
-            key={img.id}
-            type="button"
-            className="gallery-thumb group relative rounded-lg overflow-hidden cursor-pointer opacity-0 aspect-[4/3]"
-            onClick={() => select(index)}
-          >
-            <img
-              src={img.src}
-              alt={img.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
-            <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <span className="text-[12px] text-white font-medium">
-                {img.title}
-              </span>
-            </div>
-          </button>
-        ))}
+      <div ref={gridRef} className="flex flex-col gap-6 p-4">
+        {groups.map((group) => {
+          const startIndex = globalIndex;
+          globalIndex += group.images.length;
+          return (
+            <section key={group.company} className="flex flex-col gap-2">
+              <h3 className="text-[13px] font-semibold text-white/90 capitalize">
+                {group.title}
+              </h3>
+              <div
+                className="grid gap-2"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                }}
+              >
+                {group.images.map((img, i) => (
+                  <button
+                    key={img.id}
+                    type="button"
+                    className="gallery-thumb group relative rounded-lg overflow-hidden cursor-pointer opacity-0 aspect-[4/3]"
+                    onClick={() => select(startIndex + i)}
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      draggable={false}
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
+                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <span className="text-[12px] text-white font-medium">
+                        {img.title}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </ScrollArea>
   );

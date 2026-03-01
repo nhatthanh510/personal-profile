@@ -36,31 +36,31 @@ export const DESKTOP_ITEMS: DesktopItem[] = [
     y: 18,
     action: { type: "openFolder", finderPath: ["documents"] },
   },
-  {
-    id: "dt-designs",
-    name: "Designs",
-    icon: "/images/folder.png",
-    x: 4,
-    y: 32,
-    action: { type: "openFolder", finderPath: ["designs"] },
-  },
   // Top-right cluster
   {
     id: "dt-resume",
     name: "Resume.pdf",
     icon: "/images/pdf.png",
-    x: 90,
-    y: 4,
+    x: 50,
+    y: 10,
     action: { type: "openFile", windowKey: "pdfFile", title: "Resume.pdf", src: "/resume.pdf" },
   },
   // Bottom-right
+  {
+    id: "dt-discord",
+    name: "Discord",
+    icon: "/icons/discord.svg",
+    x: 90,
+    y: 58,
+    action: { type: "openLink", url: "https://discord.com/users/560680367896526848" },
+  },
   {
     id: "dt-github",
     name: "GitHub",
     icon: "/icons/github.svg",
     x: 90,
     y: 72,
-    action: { type: "openLink", url: "https://github.com" },
+    action: { type: "openLink", url: "https://github.com/nhatthanh510" },
   },
   {
     id: "dt-linkedin",
@@ -68,6 +68,6 @@ export const DESKTOP_ITEMS: DesktopItem[] = [
     icon: "/icons/linkedin.svg",
     x: 90,
     y: 86,
-    action: { type: "openLink", url: "https://linkedin.com" },
-  },
+    action: { type: "openLink", url: "https://www.linkedin.com/in/thanh-nguyen-14162911a/" },
+  }
 ];

@@ -51,7 +51,7 @@ export function FinderContent() {
         ref={gridRef}
         className="grid gap-1 p-4"
         style={{
-          gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
         }}
       >
         {currentItems.map((item) => {
@@ -79,8 +79,8 @@ export function FinderContent() {
               />
               <span
                 className={cn(
-                  "text-[11px] leading-tight text-center break-all line-clamp-2 px-0.5",
-                  isSelected ? "bg-[#06b6d4] text-white rounded-sm px-1" : "text-white/80"
+                  "text-[11px] leading-tight text-center min-w-0 w-full break-words line-clamp-2 overflow-hidden py-0.5",
+                  isSelected ? "bg-[#06b6d4] text-white rounded-sm px-0" : "text-white/80"
                 )}
               >
                 {item.name}
