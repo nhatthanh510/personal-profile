@@ -1,23 +1,21 @@
 // ── Skill data for portfolio ──────────────────────────────────────
 interface Skill {
   name: string;
-  level: number;
   category: string;
 }
 
 const skills: Skill[] = [
-  { name: "React", level: 95, category: "Frontend" },
-  { name: "TypeScript", level: 90, category: "Frontend" },
-  { name: "Tailwind CSS", level: 90, category: "Frontend" },
-  { name: "Next.js", level: 85, category: "Frontend" },
-  { name: "Vue.js", level: 75, category: "Frontend" },
-  { name: "Node.js", level: 85, category: "Backend" },
-  { name: "Python", level: 80, category: "Backend" },
-  { name: "PostgreSQL", level: 80, category: "Backend" },
-  { name: "Docker", level: 75, category: "DevOps" },
-  { name: "AWS", level: 70, category: "DevOps" },
-  { name: "Git", level: 90, category: "Tools" },
-  { name: "Figma", level: 70, category: "Tools" },
+  { name: "React", category: "Frontend" },
+  { name: "TypeScript", category: "Frontend" },
+  { name: "Tailwind CSS", category: "Frontend" },
+  { name: "Next.js", category: "Frontend" },
+  { name: "Vue.js", category: "Frontend" },
+  { name: "Node.js", category: "Backend" },
+  { name: "PostgreSQL", category: "Backend" },
+  { name: "Docker", category: "DevOps" },
+  { name: "AWS", category: "DevOps" },
+  { name: "Git", category: "Tools" },
+  { name: "Figma", category: "Tools" },
 ];
 
 // ── Terminal line types ───────────────────────────────────────────
@@ -29,13 +27,6 @@ export interface TerminalLine {
 
 export const PROMPT = "nathan@portfolio";
 export const PROMPT_PATH = "~";
-
-// ── Bar chart helper ──────────────────────────────────────────────
-function renderBar(level: number, width = 20): string {
-  const filled = Math.round((level / 100) * width);
-  const empty = width - filled;
-  return `[${"█".repeat(filled)}${"░".repeat(empty)}] ${level}%`;
-}
 
 // ── ASCII welcome ─────────────────────────────────────────────────
 export const ASCII_WELCOME: string[] = [
@@ -78,12 +69,11 @@ export function processCommand(cmd: string): string[] {
         "  Available commands:",
         "  ──────────────────────────────────────",
         "  help          Show this help message",
-        "  skills        List all skills with levels",
-        "  skills -c     Group skills by category",
+        "  skills        List skills by category",
+        "  skills -a     List all skills (flat)",
         "  about         About me",
         "  contact       Contact information",
         "  projects      Notable projects",
-        "  experience    Work experience",
         "  date          Current date & time",
         "  clear         Clear terminal",
         "  tech          Tech stack",
@@ -91,30 +81,21 @@ export function processCommand(cmd: string): string[] {
       ];
 
     case "skills": {
-      if (args.includes("-c")) {
+      const byCategory = args.includes("-a") === false;
+      if (byCategory) {
         const categories = [...new Set(skills.map((s) => s.category))];
-        const lines: string[] = [""];
+        const lines: string[] = ["", "  Skills", "  ─────────────────────────────────────────"];
         for (const cat of categories) {
-          lines.push(`  ┌─ ${cat} ${"─".repeat(38 - cat.length)}┐`);
-          const catSkills = skills.filter((s) => s.category === cat);
-          for (const s of catSkills) {
-            const name = s.name.padEnd(14);
-            lines.push(`  │  ${name} ${renderBar(s.level)}  │`);
-          }
-          lines.push(`  └${"─".repeat(43)}┘`);
+          const names = skills.filter((s) => s.category === cat).map((s) => s.name);
+          lines.push(`  ${cat}`);
+          lines.push(`  ${names.join(", ")}`);
           lines.push("");
         }
         return lines;
       }
-      const lines = [
-        "",
-        "  Skills Overview:",
-        "  ─────────────────────────────────────────",
-      ];
-      for (const s of skills) {
-        const name = s.name.padEnd(14);
-        lines.push(`  ${name} ${renderBar(s.level)}`);
-      }
+      const lines = ["", "  All skills", "  ─────────────────────────────────────────"];
+      const names = skills.map((s) => s.name);
+      lines.push(`  ${names.join(", ")}`);
       lines.push("");
       return lines;
     }
@@ -150,17 +131,6 @@ export function processCommand(cmd: string): string[] {
         "  2. E-Commerce App   – Full-stack React + Node",
         "  3. Chat Platform    – Real-time messaging app",
         "  4. Data Dashboard   – Analytics visualization",
-        "",
-      ];
-
-    case "experience":
-      return [
-        "",
-        "  Work Experience:",
-        "  ─────────────────────────────────────────",
-        "  ▸ Senior Frontend Developer  (2023–now)",
-        "  ▸ Full-Stack Developer       (2021–2023)",
-        "  ▸ Junior Web Developer       (2019–2021)",
         "",
       ];
 
